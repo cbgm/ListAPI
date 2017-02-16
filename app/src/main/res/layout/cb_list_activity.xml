@@ -1,0 +1,18 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cb_list_background_color"
+    android:foregroundGravity="center_horizontal">
+
+
+    <ListView
+        android:id="@+id/list_container"
+        android:layout_height="match_parent"
+        android:divider="@color/cb_list_divider_color"
+        android:dividerHeight="@dimen/cb_divider_height"
+        android:layout_width="match_parent"
+        android:fastScrollEnabled="true"
+        android:persistentDrawingCache="scrolling"
+        android:scrollingCache="false"/>
+
+</GridLayout>

@@ -1,0 +1,57 @@
+<RelativeLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="160dp"
+        android:clickable="false"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView android:id="@+id/txt_type"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical|left"
+            android:textStyle="bold"
+            android:nestedScrollingEnabled="false"
+            android:longClickable="true"
+            android:clickable="false"
+            android:textIsSelectable="false"
+            android:inputType="none"
+            android:layout_row="0" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical|left"
+        android:gravity="center_vertical"
+        android:clickable="false"
+        android:measureWithLargestChild="false">
+
+        <TextView android:id="@+id/txt_name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|left"
+            android:textStyle="bold"
+            android:clickable="false"
+            android:textIsSelectable="false"
+            android:gravity="left" />
+        <TextView android:id="@+id/txt_details"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|left"
+            android:clickable="false"
+            android:textIsSelectable="false"
+            android:gravity="left"
+            android:linksClickable="false" />
+
+    </LinearLayout>
+</RelativeLayout>

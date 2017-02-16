@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- App colors -->
+    <color name="cb_list_background_color">#FFFFFF</color>
+    <color name="cb_list_divider_color">#d3d3d3</color>
+    <color name="cb_item_background_color">#FFFFFF</color>
+    <color name="cb_item_foreground_color">#FFFFFF</color>
+    <color name="cb_edit_background_color">#aaaaaa</color>
+    <color name="cb_delete_background_color">#cc0000</color>
+</resources>

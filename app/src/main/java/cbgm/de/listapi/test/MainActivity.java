@@ -1,17 +1,11 @@
 package cbgm.de.listapi.test;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 import cbgm.de.listapi.R;
 import cbgm.de.listapi.data.CBListActivity;
@@ -24,25 +18,23 @@ public class MainActivity extends CBListActivity<ViewItem, Item, MyAdapter> {
 
     public MyAdapter initAdapter() {
         int type = 1;
-        int[] temp = {5, 7 ,2 , 3 ,4 , 10, 8, 6 ,1 ,9};
         test = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
 
             if (type == 1) {
-                MyItem item = new MyItem(new MyViewHolder(), R.layout.backitem_standard, temp[i]);
+                MyItem item = new MyItem(new MyViewHolder(), R.layout.backitem_standard);
                 item.setName("test " + i);
                 MyListViewItem li = new MyListViewItem(item);
                 test.add(li);
                 type = 2;
             } else {
-                MyItem2 item2 = new MyItem2(new MyViewHolder2(), R.layout.backitem_standard2, temp[i]);
+                MyItem2 item2 = new MyItem2(new MyViewHolder2(), R.layout.backitem_standard2);
                 item2.setName("test " + i);
                 MyListViewItemSec li2 = new MyListViewItemSec(item2);
                 test.add(li2);
                 type = 1;
             }
         }
-        sortList();
         return new MyAdapter(this, test);
     }
 
@@ -90,15 +82,6 @@ public class MainActivity extends CBListActivity<ViewItem, Item, MyAdapter> {
             default:
                 return false;
         }
-    }
-
-    public void sortList() {
-        Collections.sort(test, new Comparator<ViewItem>() {
-            @Override
-            public int compare(ViewItem a, ViewItem b) {
-                return ((Integer)a.getItem().getSequenceNumber()).compareTo((Integer)b.getItem().getSequenceNumber());
-            }
-        });
     }
 }
 

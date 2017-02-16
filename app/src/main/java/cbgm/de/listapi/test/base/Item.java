@@ -9,7 +9,7 @@ import cbgm.de.listapi.test.MyViewHolder;
 
 public class Item extends CBItem<MyHolder> {
 
-    public Item(MyHolder holder, int itemResource, int sequenceNumber) {
-        super(holder, itemResource, sequenceNumber);
+    public Item(MyHolder holder, int itemResource) {
+        super(holder, itemResource);
     }
 }

@@ -40,7 +40,6 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
 
     @Override
     public boolean onTouch(View v, MotionEvent motionEvent) {
-        int movingNumber;
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -51,8 +50,6 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
                     return true;
                 }
                 this.dragedSequence = (E) this.listContainer.getAdapter().getItem(this.pos);
-                movingNumber = this.dragedSequence.getItem().getSequenceNumber();
-                Log.e("test","Position: " + movingNumber);
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -78,11 +75,8 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
                         }
                     }
                     //switch moving numbers
-                    int movingFrom = this.sequenceList.get(arFromPos).getItem().getSequenceNumber();
-                    int movingTo = this.sequenceList.get(arToPos).getItem().getSequenceNumber();
-                    if (movingFrom != movingTo && arFromPos != arToPos) {
-                        this.sequenceList.get(arFromPos).getItem().setSequenceNumber(movingTo);
-                        this.sequenceList.get(arToPos).getItem().setSequenceNumber(movingFrom);
+
+                    if (arFromPos != arToPos) {
                         Log.e("test","from: " + arFromPos + "  to: " + arToPos);
                         //swap elements
                         Collections.swap(this.sequenceList, arFromPos, arToPos);

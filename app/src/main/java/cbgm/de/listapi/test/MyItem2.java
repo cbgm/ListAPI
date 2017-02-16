@@ -19,7 +19,7 @@ public class MyItem2 extends Item {
     private String name;
     private String test;
 
-    public MyItem2(MyViewHolder2 holder, int itemResource, int sequenceNumber) {
-        super(holder, itemResource, sequenceNumber);
+    public MyItem2(MyViewHolder2 holder, int itemResource) {
+        super(holder, itemResource);
     }
 }

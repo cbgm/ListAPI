@@ -19,7 +19,7 @@ import cbgm.de.listapi.listener.IListMenuListener;
  * @author Christian Bergmann
  */
 
-public abstract class CBListActivity<E extends CBListViewItem, M extends CBItem, T extends CBAdapter> extends FragmentActivity implements IListMenuListener<E, M> {
+public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapter> extends FragmentActivity implements IListMenuListener<E> {
 
     protected T adapter;
     protected Menu menu;

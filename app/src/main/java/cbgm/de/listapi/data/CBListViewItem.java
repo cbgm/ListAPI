@@ -24,7 +24,7 @@ import cbgm.de.listapi.listener.SwipeListener;
  * @author Christian Bergmann
  */
 
-public abstract class CBListViewItem<V extends CBViewHolder, M extends CBItem>{
+public abstract class CBListViewItem<V extends CBViewHolder, M>{
     protected M item;
     protected V holder;
     protected int itemResource;
@@ -33,10 +33,10 @@ public abstract class CBListViewItem<V extends CBViewHolder, M extends CBItem>{
     protected boolean addEdit = false;
     protected List<CBBaseButton> customButtons;
 
-    public CBListViewItem(final M item) {
+    public CBListViewItem(final M item, final V holder, final int itemResource) {
         this.item = item;
-        this.itemResource = item.itemResource;
-        this.holder = (V) item.getHolder();
+        this.itemResource = itemResource;
+        this.holder = (V) holder;
         this.customButtons = new ArrayList<>();
     }
 

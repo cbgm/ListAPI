@@ -16,7 +16,7 @@ import cbgm.de.listapi.listener.IOneClickListener;
  * The adapter for the list
  * @author Christian Bergmann
  */
-public abstract class CBAdapter<E extends CBListViewItem, M extends CBItem> extends BaseAdapter implements IOneClickListener {
+public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter implements IOneClickListener {
 
     protected Context context;
     protected final LayoutInflater inflator;

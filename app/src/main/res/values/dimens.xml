@@ -3,8 +3,5 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="cb_item_height">80dp</dimen>
-    <dimen name="cb_divider_height">1px</dimen>
-
 
 </resources>

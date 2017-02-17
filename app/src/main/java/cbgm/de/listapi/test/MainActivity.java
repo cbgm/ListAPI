@@ -9,10 +9,9 @@ import java.util.List;
 
 import cbgm.de.listapi.R;
 import cbgm.de.listapi.data.CBListActivity;
-import cbgm.de.listapi.test.base.Item;
 import cbgm.de.listapi.test.base.ViewItem;
 
-public class MainActivity extends CBListActivity<ViewItem, Item, MyAdapter> {
+public class MainActivity extends CBListActivity<ViewItem, MyAdapter> {
     private static final int MENU_ITEM_ITEM1 = 1;
     List<ViewItem> test;
 
@@ -22,15 +21,13 @@ public class MainActivity extends CBListActivity<ViewItem, Item, MyAdapter> {
         for (int i = 0; i < 10; i++) {
 
             if (type == 1) {
-                MyItem item = new MyItem(new MyViewHolder(), R.layout.backitem_standard);
-                item.setName("test " + i);
-                MyListViewItem li = new MyListViewItem(item);
+                String item = "item " + i;
+                MyListViewItem li = new MyListViewItem(item, new MyViewHolder(), R.layout.backitem_standard);
                 test.add(li);
                 type = 2;
             } else {
-                MyItem2 item2 = new MyItem2(new MyViewHolder2(), R.layout.backitem_standard2);
-                item2.setName("test " + i);
-                MyListViewItemSec li2 = new MyListViewItemSec(item2);
+                String item = "item " + i;
+                MyListViewItemSec li2 = new MyListViewItemSec(item, new MyViewHolder2(), R.layout.backitem_standard2);
                 test.add(li2);
                 type = 1;
             }
@@ -44,17 +41,17 @@ public class MainActivity extends CBListActivity<ViewItem, Item, MyAdapter> {
 
 
     @Override
-    public void handleDelete(Item o) {
+    public void handleDelete(Object o) {
         Toast.makeText(getBaseContext(), "delete", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void handleEdit(Item o) {
+    public void handleEdit(Object o) {
         Toast.makeText(getApplicationContext(), "edit", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void handleShow(Item o) {
+    public void handleShow(Object o) {
         Toast.makeText(getApplicationContext(), "show", Toast.LENGTH_SHORT).show();
     }
 

@@ -2,7 +2,6 @@ package cbgm.de.listapi.listener;
 
 import java.util.List;
 
-import cbgm.de.listapi.data.CBItem;
 import cbgm.de.listapi.data.CBListViewItem;
 
 
@@ -11,9 +10,9 @@ import cbgm.de.listapi.data.CBListViewItem;
  * @author Christian Bergmann
  */
 
-public interface IListMenuListener<E extends CBListViewItem, M extends CBItem> {
-    void handleDelete(final M o);
-    void handleEdit(final M o);
-    void handleShow(final M o);
+public interface IListMenuListener<E extends CBListViewItem> {
+    void handleDelete(final Object o);
+    void handleEdit(final Object o);
+    void handleShow(final Object o);
     void handleSort(final List<E> list);
 }

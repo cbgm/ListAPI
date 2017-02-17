@@ -11,4 +11,6 @@
     <color name="cb_item_foreground_color">#FFFFFF</color>
     <color name="cb_edit_background_color">#aaaaaa</color>
     <color name="cb_delete_background_color">#cc0000</color>
+
+    <color name="yellow">#f04aff</color>
 </resources>

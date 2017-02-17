@@ -16,6 +16,7 @@ import cbgm.de.listapi.listener.IListMenuListener;
 import cbgm.de.listapi.listener.IOneClickListener;
 import cbgm.de.listapi.listener.SwipeListener;
 import cbgm.de.listapi.test.base.Item;
+import cbgm.de.listapi.test.base.MyButton;
 import cbgm.de.listapi.test.base.MyHolder;
 import cbgm.de.listapi.test.base.ViewItem;
 
@@ -26,6 +27,9 @@ import cbgm.de.listapi.test.base.ViewItem;
 public class MyListViewItem extends ViewItem {
     public MyListViewItem(MyItem item) {
         super(item);
+        this.addDelete = true;
+        this.addEdit = true;
+        this.customButtons.add(new MyButton(220, R.color.yellow, -1));
     }
 
     public MyHolder setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final SwipeListener swipeListener) {
@@ -37,12 +41,6 @@ public class MyListViewItem extends ViewItem {
         test.name.setTextColor(Color.GREEN);
         if (isSortMode) {
             test.name.setOnClickListener(null);
-
-            if (highlightPos == position && highlightPos != -1) {
-                holder.item.setBackgroundColor(Color.rgb(219,235,226));
-            } else {
-                holder.item.setBackgroundColor(Color.WHITE);
-            }
         } else {
             test.name.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -50,32 +48,13 @@ public class MyListViewItem extends ViewItem {
                     listMenuListener.handleShow(item);
                 }
             });
-            holder.edit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    swipeListener.rollback();
-                    listMenuListener.handleEdit(item);
-                }
-            });
-            holder.delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    swipeListener.rollback();
-                    listMenuListener.handleDelete(item);
-                }
-            });
         }
-        //test.delete.setVisibility(View.GONE);
         return test;
     }
 
     public MyHolder initView(View itemView, final Context context) {
         MyViewHolder test = (MyViewHolder)holder;
         test.name = (TextView) itemView.findViewById(R.id.txt_dynamic2);
-        test.buttonContainer.addView(CBBaseButton.getButton(LayoutID.EDIT_BUTTON_ID, context, R.color.cb_edit_background_color, R.mipmap.edit_icon));
-        test.buttonContainer.addView(CBBaseButton.getButton(LayoutID.DELETE_BUTTON_ID, context, R.color.cb_delete_background_color, R.mipmap.trash_icon));
-        test.delete = (LinearLayout) itemView.findViewById(LayoutID.DELETE_BUTTON_ID);
-        test.edit = (LinearLayout) itemView.findViewById(LayoutID.EDIT_BUTTON_ID);
 
         return test;
     }

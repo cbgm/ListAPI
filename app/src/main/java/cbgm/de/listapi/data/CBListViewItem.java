@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cbgm.de.listapi.R;
 import cbgm.de.listapi.listener.IListMenuListener;
 import cbgm.de.listapi.listener.IOneClickListener;
@@ -26,11 +29,15 @@ public abstract class CBListViewItem<V extends CBViewHolder, M extends CBItem>{
     protected V holder;
     protected int itemResource;
     private Context context;
+    protected boolean addDelete = false;
+    protected boolean addEdit = false;
+    protected List<CBBaseButton> customButtons;
 
     public CBListViewItem(final M item) {
         this.item = item;
         this.itemResource = item.itemResource;
         this.holder = (V) item.getHolder();
+        this.customButtons = new ArrayList<>();
     }
 
     public V getHolder() {
@@ -81,21 +88,26 @@ public abstract class CBListViewItem<V extends CBViewHolder, M extends CBItem>{
 
         if (!isSortMode) {
             holder.item.setOnTouchListener(swipeListener);
-          /*  holder.edit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    swipeListener.rollback();
-                    listMenuListener.handleEdit(item);
-                }
-            });
-            holder.delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    swipeListener.rollback();
-                    listMenuListener.handleDelete(item);
-                }
-            });*/
 
+            if (addEdit) {
+                holder.edit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        swipeListener.rollback();
+                        listMenuListener.handleEdit(item);
+                    }
+                });
+            }
+
+            if (addDelete) {
+                holder.delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        swipeListener.rollback();
+                        listMenuListener.handleDelete(item);
+                    }
+                });
+            }
         } else {
             holder.item.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -103,12 +115,12 @@ public abstract class CBListViewItem<V extends CBViewHolder, M extends CBItem>{
                     return false;
                 }
             });
-/*
+
             if (highlightPos == position && highlightPos != -1) {
                 holder.item.setBackgroundColor(Color.rgb(219,235,226));
             } else {
                 holder.item.setBackgroundColor(Color.WHITE);
-            }*/
+            }
         }
         setUpView(position, convertView, parent, isSortMode, listMenuListener, highlightPos, oneClickListener, inflater, swipeListener);
         return convertView;
@@ -121,12 +133,22 @@ public abstract class CBListViewItem<V extends CBViewHolder, M extends CBItem>{
      */
     private View prepareView(final ViewGroup parent, final LayoutInflater inflater, final Context context) {
         View itemView = CBBaseView.getView(context);
-        //View itemView = inflater.inflate(R.layout.list_item_standard, parent, false);
-
         holder.item = (GridLayout)itemView.findViewById(LayoutID.ITEM_FOREGROUND_ID);
         holder.buttonContainer = (LinearLayout) itemView.findViewById(LayoutID.BUTTON_CONTAINER_ID);
-        /*holder.delete = (LinearLayout) itemView.findViewById(LayoutID.DELETE_BUTTON_ID);
-        holder.edit = (LinearLayout) itemView.findViewById(LayoutID.EDIT_BUTTON_ID);*/
+
+        if (addEdit) {
+            holder.buttonContainer.addView(new CBBaseButton().getButton(LayoutID.EDIT_BUTTON_ID, context, R.color.cb_edit_background_color, R.mipmap.edit_icon));
+            holder.edit = (LinearLayout) itemView.findViewById(LayoutID.EDIT_BUTTON_ID);
+        }
+
+        if (addDelete) {
+            holder.buttonContainer.addView(new CBBaseButton().getButton(LayoutID.DELETE_BUTTON_ID, context, R.color.cb_delete_background_color, R.mipmap.trash_icon));
+            holder.delete = (LinearLayout) itemView.findViewById(LayoutID.DELETE_BUTTON_ID);
+        }
+
+        for (CBBaseButton customButton : customButtons) {
+            holder.buttonContainer.addView(customButton.getCustomButton(context));
+        }
         holder.backItem = (LinearLayout) itemView.findViewById(LayoutID.ITEM_BACKGROUND_ID);
         View personalView = inflater.inflate(this.itemResource, parent, false);
         holder.item.addView(personalView);
@@ -154,4 +176,5 @@ public abstract class CBListViewItem<V extends CBViewHolder, M extends CBItem>{
      * @param itemView
      */
     public abstract V initView(View itemView, Context context);
+
 }

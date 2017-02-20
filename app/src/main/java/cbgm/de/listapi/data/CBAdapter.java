@@ -80,7 +80,7 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter im
 
     /**
      * Method for setting the position to highlight when sorting.
-     * @param highlightPos
+     * @param highlightPos the position to highlight
      */
     public void setItemToHighlight(int highlightPos) {
         this.highlightPos = highlightPos;

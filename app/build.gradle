@@ -1,15 +1,16 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 24
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "cbgm.de.listapi"
         minSdkVersion 21
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+        version "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        archivesBaseName = "listapi"
     }
     buildTypes {
         release {
@@ -19,6 +20,16 @@ android {
     }
     lintOptions{
         disable "ResourceType"
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.aar')) {
+                def fileName = "${archivesBaseName}-${version}.aar"
+                output.outputFile = new File(outputFile.parent, fileName)
+            }
+        }
     }
 }
 

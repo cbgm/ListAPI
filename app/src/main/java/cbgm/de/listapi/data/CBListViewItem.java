@@ -2,7 +2,6 @@ package cbgm.de.listapi.data;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,7 +35,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
     public CBListViewItem(final M item, final V holder, final int itemResource) {
         this.item = item;
         this.itemResource = itemResource;
-        this.holder = (V) holder;
+        this.holder = holder;
         this.customButtons = new ArrayList<>();
     }
 
@@ -66,15 +65,15 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
 
     /**
      * Method to get the expected view.
-     * @param position
-     * @param convertView
+     * @param position the current postion of the item
+     * @param convertView the convert view
      * @param parent
-     * @param isSortMode
-     * @param listMenuListener
-     * @param highlightPos
-     * @param oneClickListener
-     * @param inflater
-     * @return
+     * @param isSortMode tells if in sort mode
+     * @param listMenuListener the listener for clicks
+     * @param highlightPos the position to highlight
+     * @param oneClickListener the single click listener
+     * @param inflater the inflater
+     * @return the convert view
      */
     public View getConvertView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final Context context) {
         convertView = isSortMode ? null: convertView;
@@ -159,21 +158,21 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
 
     /**
      * Method for setting up the view (values, listeners).
-     * @param position
-     * @param convertView
+     * @param position the current postion of the item
+     * @param convertView the convert view
      * @param parent
-     * @param isSortMode
-     * @param listMenuListener
-     * @param highlightPos
-     * @param oneClickListener
-     * @param inflater
-     * @param swipeListener
+     * @param isSortMode tells if in sort mode
+     * @param listMenuListener the listener for clicks
+     * @param highlightPos the position to highlight
+     * @param oneClickListener the single click listener
+     * @param inflater the inflater
+     * @param swipeListener the swipe listener
      */
     public abstract V setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final SwipeListener swipeListener);
 
     /**
      * Method for initializing the view.
-     * @param itemView
+     * @param itemView the convert view
      */
     public abstract V initView(View itemView, Context context);
 

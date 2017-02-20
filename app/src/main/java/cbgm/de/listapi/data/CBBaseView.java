@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import cbgm.de.listapi.R;
-import cbgm.de.listapi.data.LayoutID;
+
 
 /**
  * Created by SA_Admin on 14.02.2017.

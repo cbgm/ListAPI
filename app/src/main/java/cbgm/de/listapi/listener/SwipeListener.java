@@ -16,21 +16,34 @@ import cbgm.de.listapi.data.CBViewHolder;
 
 public class SwipeListener implements View.OnTouchListener {
 
+    /* Tells if swipe is active */
     private boolean dragActive;
+    /* Tells the original x position moving from */
     private float fromX;
+    /* Tells the x position moving to */
     private float toX;
+    /* Tells the changed original x position moving from */
     private float fromTempX;
+    /* Used to identify if there is more than just an swipe in x direction */
     private float fromY;
-    private boolean deleteItem;
+    /* Tells if the list item menu is visible  */
     private boolean menuVisible;
+    /* The list item view holder */
     private CBViewHolder holder;
+    /* The list items position */
     private int listPosition;
+    /* The listener to handle a single click */
     private IOneClickListener IOneClickListener;
 
+    /**
+     * Constructor
+     * @param holder the view holder
+     * @param position the items position
+     * @param IOneClickListener the listener to handle a single click
+     */
     public SwipeListener(final CBViewHolder holder, final int position, final IOneClickListener IOneClickListener) {
         this.holder = holder;
         this.IOneClickListener = IOneClickListener;
-        this.deleteItem = false;
         this.listPosition = position;
         this.dragActive = false;
         this.menuVisible = false;
@@ -43,50 +56,45 @@ public class SwipeListener implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN: {
                 this.fromX = motionEvent.getX();
                 this.fromY = motionEvent.getY();
-                Log.d("test", "start drag: from (" + this.fromX + ") to (" + this.toX + ")");
+                Log.d("LIST API", "Item is clicked for swiping from: " + this.fromX + " to: " + this.toX);
                 return true;
             }
 
             case MotionEvent.ACTION_MOVE: {
-                if (!deleteItem) {
 
-                    if (this.toX == 0 && motionEvent.getX() < this.fromX) {
-                        this.toX = motionEvent.getX();
-                    }
+                if (this.toX == 0 && motionEvent.getX() < this.fromX) {
+                    this.toX = motionEvent.getX();
+                }
 
-                    //Adding offset because some devices are too fast
-                    if ((motionEvent.getX() + 50) < this.fromX) {
-                        this.dragActive = true;
-                    }
+                //Adding offset because some devices are too fast
+                if ((motionEvent.getX() + 50) < this.fromX) {
+                    this.dragActive = true;
+                }
 
-                    if (motionEvent.getX() < this.fromX && motionEvent.getX() < this.toX && (this.fromX - this.toX) < this.holder.buttonContainer.getWidth()) {
-                        this.fromTempX = motionEvent.getX() - this.toX;
-                        float move = this.fromTempX - 1;
+                if (motionEvent.getX() < this.fromX && motionEvent.getX() < this.toX && (this.fromX - this.toX) < this.holder.buttonContainer.getWidth()) {
+                    this.fromTempX = motionEvent.getX() - this.toX;
+                    float move = this.fromTempX - 1;
 
-                        Log.e("test", "move: " + move + " - Width: " + -this.holder.buttonContainer.getWidth());
-                        if (move > -holder.buttonContainer.getWidth() / 2) {
-                            Log.d("test", "move drag: from (" + this.fromTempX + ") to (" + move + ")");
-                            doAnimation(this.fromTempX, move);
-                        } else {
-                            this.menuVisible = true;
-                        }
+                    if (move > -holder.buttonContainer.getWidth() / 2) {
+                        Log.d("LIST API", "Swiping from: " + this.fromTempX + " to: " + move);
+                        doAnimation(this.fromTempX, move);
+                    } else {
+                        this.menuVisible = true;
                     }
                 }
                 return true;
-
             }
 
             case MotionEvent.ACTION_UP: {
-                Log.d("test", "up called");
                 if (this.dragActive && this.menuVisible) {
-                    Log.d("test", "move end up");
+                    Log.d("LIST API", "Item released");
                     doAnimation(this.fromTempX, -this.holder.buttonContainer.getWidth());
                     this.dragActive = false;
                     this.holder.backItem.bringToFront();
                 } else {
 
                     if (!this.dragActive && !this.menuVisible) {
-                        Log.d("test", "single click");
+                        Log.d("LIST API", "Item clicked");
                         //rollback();
 
                         if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50))
@@ -100,17 +108,16 @@ public class SwipeListener implements View.OnTouchListener {
             }
 
             case MotionEvent.ACTION_CANCEL: {
-                Log.d("test", "cancel called");
 
                 if (this.dragActive && this.menuVisible) {
-                    Log.d("test", "move end cancel");
+                    Log.d("LIST API", "Item released");
                     doAnimation(this.fromTempX, -this.holder.buttonContainer.getWidth());
                     this.dragActive = false;
                     this.holder.backItem.bringToFront();
                 } else {
 
                     if (!this.dragActive && !this.menuVisible) {
-                        Log.d("test", "single click");
+                        Log.d("LIST API", "Item clicked");
                         //rollback();
 
                         if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50))
@@ -122,13 +129,6 @@ public class SwipeListener implements View.OnTouchListener {
                 }
                 return true;
             }
-
-            case MotionEvent.ACTION_HOVER_MOVE:
-                Log.d("test", "hover");
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                Log.d("test", "pointer");
-                break;
             default:
                 break;
         }
@@ -139,16 +139,24 @@ public class SwipeListener implements View.OnTouchListener {
         this.IOneClickListener = IOneClickListener;
     }
 
+    /**
+     * Method to roll back the swiping action
+     */
     public void rollback() {
+        Log.d("LIST API", "Item swipe rollback");
         this.holder.item.bringToFront();
         doAnimation(this.fromTempX, 0);
-
         this.fromX = 0;
         this.toX = 0;
         this.dragActive = false;
         this.menuVisible = false;
     }
 
+    /**
+     * Method to do the animation for the swiping
+     * @param startAt the starting x point
+     * @param endAt the ending x point
+     */
     private void doAnimation(final float startAt, final float endAt) {
         TranslateAnimation animate = new TranslateAnimation(startAt, endAt, 0, 0);
         animate.setDuration(100);

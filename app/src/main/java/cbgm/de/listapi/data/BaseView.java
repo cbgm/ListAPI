@@ -1,24 +1,21 @@
 package cbgm.de.listapi.data;
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import cbgm.de.listapi.R;
 
 
 /**
- * Created by SA_Admin on 14.02.2017.
+ * Class which represent to basic view which later contains the foreground
+ * @author Christian Bergmann
  */
 
-public class CBBaseView {
-
+public class BaseView {
 
     public static View getView(Context context) {
 
@@ -27,11 +24,7 @@ public class CBBaseView {
 
         LinearLayout backItem = new LinearLayout(context);
         backItem.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        backItem.setClickable(false);
-        backItem.setEnabled(false);
-        backItem.setFocusable(false);
-        backItem.setFocusableInTouchMode(false);
-        backItem.setBackgroundColor(context.getResources().getColor(R.color.cb_item_foreground_color));
+        backItem.setEnabled(true);
         backItem.setId(LayoutID.ITEM_BACKGROUND_ID);
 
         View space = new View(context);

@@ -3,8 +3,6 @@ package cbgm.de.listapi.data;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.ListView;
 
 import java.util.List;
@@ -20,11 +18,13 @@ import cbgm.de.listapi.listener.IListMenuListener;
  */
 
 public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapter> extends FragmentActivity implements IListMenuListener<E> {
-
+    /* The lists adapter */
     protected T adapter;
+    /* The activitys menu */
     protected Menu menu;
-    protected List<E> resortedList = null;
+    /* Set if sort mode of list should be active  */
     protected boolean isSortMode = false;
+    /* The lists container within the layout */
     protected ListView listContainer;
 
     @Override
@@ -50,31 +50,28 @@ public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapt
     }
 
     /**
-     * Method for setting up the adapter.
+     * Method for setting up the adapter and do some initialization.
      */
     public abstract T initAdapter();
 
-    public void resetList() {
-        if(!this.isSortMode) {
-            this.listContainer.setOnTouchListener(null);
-            listContainer.setAdapter(this.adapter);
-            this.adapter.reInit(getUpdatedData(), this.isSortMode);
-        } else {
-            DragListener<E, T> dragListener = new DragListener<>(this.adapter.getData(), this.adapter, this.listContainer);
-            dragListener.setSortListener(this);
-            listContainer.setAdapter(this.adapter);
-            this.listContainer.setOnTouchListener(dragListener);
-            this.adapter.reInit(getUpdatedData(), this.isSortMode);
-        }
-    };
+    /**
+     * Method for updating the data after changes
+     */
+    public abstract void updateData();
 
+    /**
+     * Method to update the adapter
+     */
     public void updateAdapter(){
 
+        // if not in sort mode remove touch from list container
         if(!this.isSortMode) {
+
             this.listContainer.setOnTouchListener(null);
 
             this.adapter.reInit(getUpdatedData(), this.isSortMode);
         } else {
+            // add touch to list container if in sort
             this.adapter.reInit(getUpdatedData(), this.isSortMode);
             DragListener<E, T> dragListener = new DragListener<>(this.adapter.getData(), this.adapter, this.listContainer);
             dragListener.setSortListener(this);
@@ -87,6 +84,10 @@ public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapt
         super.onBackPressed();
     }
 
+    /**
+     * Method to get the updated data to use it in updateAdapter
+     * @return the updated data
+     */
     public abstract List<E> getUpdatedData();
 
 }

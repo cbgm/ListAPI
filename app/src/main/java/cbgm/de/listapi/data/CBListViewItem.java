@@ -19,19 +19,32 @@ import cbgm.de.listapi.listener.SwipeListener;
 
 
 /**
- * The definition of a listview items data
+ * Class which defines a listview item
  * @author Christian Bergmann
  */
 
 public abstract class CBListViewItem<V extends CBViewHolder, M>{
+    /* The data element of the list view item */
     protected M item;
+    /* The view holder */
     protected V holder;
+    /* The id of the layout to inflate */
     protected int itemResource;
+    /* The application context */
     private Context context;
+    /* Set if delete button should be added */
     protected boolean addDelete = false;
+    /* Set if edit button should be added */
     protected boolean addEdit = false;
+    /* Any other custom buttons (extend from CBBaseButton) */
     protected List<CBBaseButton> customButtons;
 
+    /**
+     * Constructor
+     * @param item the list item data
+     * @param holder the view holder
+     * @param itemResource the id of the layout to inflate which represents the foreground
+     */
     public CBListViewItem(final M item, final V holder, final int itemResource) {
         this.item = item;
         this.itemResource = itemResource;
@@ -81,6 +94,10 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
 
         if (convertView == null) {
             convertView = prepareView(parent, inflater, context);
+        } else {
+            if (!((convertView.getTag()).getClass().isInstance(holder))){
+                convertView = prepareView(parent, inflater, context);
+            }
         }
         holder = (V) convertView.getTag();
         final SwipeListener swipeListener = new SwipeListener(holder, position, oneClickListener);
@@ -107,6 +124,13 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
                     }
                 });
             }
+
+            holder.backItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    swipeListener.rollback();
+                }
+            });
         } else {
             holder.item.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -121,17 +145,17 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
                 holder.item.setBackgroundColor(Color.WHITE);
             }
         }
-        setUpView(position, convertView, parent, isSortMode, listMenuListener, highlightPos, oneClickListener, inflater, swipeListener);
+        setUpView(position, convertView, parent, isSortMode, listMenuListener, highlightPos, oneClickListener, inflater, swipeListener, context);
         return convertView;
     }
 
     /**
-     * Method to prepare the current listview item if necessary
+     * Method to prepare the current listview if necessary
      * @param parent the {@link ViewGroup}
      * @return the view
      */
-    private View prepareView(final ViewGroup parent, final LayoutInflater inflater, final Context context) {
-        View itemView = CBBaseView.getView(context);
+    protected View prepareView(final ViewGroup parent, final LayoutInflater inflater, final Context context) {
+        View itemView = BaseView.getView(context);
         holder.item = (GridLayout)itemView.findViewById(LayoutID.ITEM_FOREGROUND_ID);
         holder.buttonContainer = (LinearLayout) itemView.findViewById(LayoutID.BUTTON_CONTAINER_ID);
 
@@ -157,7 +181,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
     }
 
     /**
-     * Method for setting up the view (values, listeners).
+     * Method for setting up the view functionality (values, listeners).
      * @param position the current postion of the item
      * @param convertView the convert view
      * @param parent
@@ -167,8 +191,9 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
      * @param oneClickListener the single click listener
      * @param inflater the inflater
      * @param swipeListener the swipe listener
+     * @param context
      */
-    public abstract V setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final SwipeListener swipeListener);
+    public abstract V setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final SwipeListener swipeListener, Context context);
 
     /**
      * Method for initializing the view.

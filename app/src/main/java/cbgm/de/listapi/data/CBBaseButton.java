@@ -1,9 +1,5 @@
 package cbgm.de.listapi.data;
 
-/**
- * Created by SA_Admin on 16.02.2017.
- */
-
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
@@ -11,15 +7,30 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+
+/**
+ * Class which represents a button to add in the background when swiping
+ * Extend from if custom button is desired.
+ * @author Christian Bergmann
+ */
 public class CBBaseButton {
+    /* The buttons id */
     private int btnId = -1;
+    /* The buttons color */
     private int colId = -1;
+    /* The buttons image */
     private int imgId = -1;
 
     public CBBaseButton() {
 
     }
 
+    /**
+     * Constructor
+     * @param buttonId the buttons id
+     * @param colorId the buttons color
+     * @param imageId the buttons image
+     */
     public CBBaseButton(final int buttonId, final int colorId, final int imageId) {
         this.imgId = imageId;
         this.colId = colorId;
@@ -46,11 +57,20 @@ public class CBBaseButton {
         return imgId;
     }
 
-    public void setIamgeId(int imgId) {
+    public void setImageId(int imgId) {
         this.imgId = imgId;
     }
 
+    /**
+     * Method to set up a basic button with an image in center (e.g. delete, edit)
+     * @param buttonId the buttons id
+     * @param context the applications context
+     * @param colorId the color of the button
+     * @param imageId the image id in resources
+     * @return the buttons view ({@link LinearLayout})
+     */
     public View getButton(final int buttonId, final Context context, final int colorId, final int imageId) {
+        // button is clickable as LinearLayout and contains an image in center
         LinearLayout button = new LinearLayout(context);
         button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         button.setOrientation(LinearLayout.HORIZONTAL);
@@ -70,6 +90,11 @@ public class CBBaseButton {
         return button;
     }
 
+    /**
+     * Method to to set up custom button instead having an image in center.
+     * @param context the application context
+     * @return the buttons view ({@link LinearLayout})
+     */
     public View getCustomButton(final Context context) {
         LinearLayout button = new LinearLayout(context);
         button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -80,6 +105,12 @@ public class CBBaseButton {
         return button;
     }
 
+    /**
+     * Method has to be overridden if a custom button is set up.
+     * Here should go the content of the buttons {@link LinearLayout}
+     * @param context the application context
+     * @return the buttons content
+     */
     public View customButtonView(final Context context) {
         return null;
     }

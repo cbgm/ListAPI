@@ -25,6 +25,11 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter im
     protected boolean isSortMode = false;
     protected int highlightPos = -1;
 
+    /**
+     * Constructor
+     * @param context the application context
+     * @param data the data to fill
+     */
     public CBAdapter(Context context, List<E> data) {
         this.data = data;
         this.context= context;
@@ -45,11 +50,6 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter im
     @Override
     public long getItemId(final int position) {
         return position;
-    }
-
-    @Override
-    public int getItemViewType(final int position) {
-        return 0;
     }
 
     @Override
@@ -86,6 +86,10 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter im
         this.highlightPos = highlightPos;
     }
 
+    /**
+     * Method to the adapters data.
+     * @return
+     */
     public List<E> getData(){
         return this.data;
     }

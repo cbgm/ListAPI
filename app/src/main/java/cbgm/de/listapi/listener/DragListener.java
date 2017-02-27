@@ -1,7 +1,11 @@
 package cbgm.de.listapi.listener;
 
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Handler;
+import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,11 +42,14 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
     private T adapter;
     /* The handler which identifies a selection */
     private final Handler longPressHandler = new Handler();
+    /* The application context */
+    private Context context;
 
-    public DragListener(final List<E> sequenceList, T baseAdapter, ListView listContainer) {
+    public DragListener(final List<E> sequenceList, T baseAdapter, ListView listContainer, Context context) {
         this.sequenceList = sequenceList;
         this.adapter = baseAdapter;
         this.listContainer = listContainer;
+        this.context = context;
     }
 
     @Override
@@ -137,6 +144,15 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
             isLongPressHandlerActivated = true;
             adapter.setItemToHighlight(pos);
             adapter.reInit(sequenceList, true);
+
+            AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+            Vibrator vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+
+            if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE || am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
+                vibrator.vibrate(40);
+            } else if (1 == Settings.System.getInt(context.getContentResolver(), "vibrate_when_ringing", 0)) {
+                vibrator.vibrate(40);
+            }
             Log.d("LIST API", "Item ready to move");
         }
     };

@@ -73,7 +73,7 @@ public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapt
         } else {
             // add touch to list container if in sort
             this.adapter.reInit(getUpdatedData(), this.isSortMode);
-            DragListener<E, T> dragListener = new DragListener<>(this.adapter.getData(), this.adapter, this.listContainer);
+            DragListener<E, T> dragListener = new DragListener<>(this.adapter.getData(), this.adapter, this.listContainer, getApplicationContext());
             dragListener.setSortListener(this);
             this.listContainer.setOnTouchListener(dragListener);
         }

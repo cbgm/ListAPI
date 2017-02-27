@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import cbgm.de.listapi.R;
+
 
 /**
  * Class which represents a button to add in the background when swiping
@@ -80,8 +82,7 @@ public class CBBaseButton {
         ImageView image = new ImageView(context);
         LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER | Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
-        layoutParams.leftMargin = 30;
-        layoutParams.rightMargin = 30;
+        layoutParams.setMargins((int) context.getResources().getDimension(R.dimen.image_margin_left_right), 0, (int) context.getResources().getDimension(R.dimen.image_margin_left_right), 0);
         image.setLayoutParams(layoutParams);
         image.setImageDrawable(context.getResources().getDrawable(imageId));
 

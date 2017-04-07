@@ -184,4 +184,6 @@ It also supports multiple list items!
         
 3. 
 
+## Example
+
 For a complete Example checkout: [https://github.com/cbgm/ListAPI_Example](https://github.com/cbgm/ListAPI_Example)

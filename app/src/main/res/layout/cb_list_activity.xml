@@ -1,8 +1,9 @@
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cb_list_background_color"
-    android:foregroundGravity="center_horizontal">
+    android:foregroundGravity="center_horizontal"
+    android:orientation="vertical">
 
 
     <ListView
@@ -15,4 +16,4 @@
         android:persistentDrawingCache="scrolling"
         android:scrollingCache="false"/>
 
-</GridLayout>
+</LinearLayout>

@@ -1,6 +1,6 @@
 # ListAPI
 
-An API for the easy usage of a configureable ListView with the features of a **sort mechanism** and adding fast **custom buttons with slide function**.
+An API for the easy usage of an **Android** configureable ListView with the features of a **sort mechanism** and adding fast **custom buttons with slide function**.
 It also supports multiple list items!
 
 ![](https://cdn.pbrd.co/images/1kdzBq37m.png)

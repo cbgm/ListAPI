@@ -188,6 +188,6 @@ It also supports multiple list items!
 
 For a complete Example checkout: [https://github.com/cbgm/ListAPI_Example](https://github.com/cbgm/ListAPI_Example)
 
-##License
+## License
 
 Licensed under the MIT license. (http://opensource.org/licenses/MIT)

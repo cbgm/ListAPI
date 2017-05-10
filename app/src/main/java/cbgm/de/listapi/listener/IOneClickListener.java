@@ -9,5 +9,6 @@ package cbgm.de.listapi.listener;
 
 public interface IOneClickListener {
     void handleSingleClick(final int position);
+    @SuppressWarnings("unused")
     void handleLongClick(final int position);
 }

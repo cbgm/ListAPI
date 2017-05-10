@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,6 +51,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
         this.context = context;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean onTouch(View v, MotionEvent motionEvent) {
 
@@ -84,13 +84,13 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
                     E switchedSequence = (E) listContainer.getAdapter().getItem(this.pos);
                     int arFromPos = this.sequenceList.indexOf(this.dragedSequence);
                     int arToPos = this.sequenceList.indexOf(switchedSequence);
-                    int x = -1;
+                    /*int x = -1;
                     for(int i = 0; i < this.sequenceList.size(); i++) {
                         if(this.sequenceList.get(i).equals(switchedSequence)) {
                             x = i;
                             break;
                         }
-                    }
+                    }*/
                     //switch moving numbers
 
                     if (arFromPos != arToPos) {
@@ -118,7 +118,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
                 cleanTouch();
                 break;
         }
-        return this.isLongPressHandlerActivated ? true : false;
+        return this.isLongPressHandlerActivated;
     }
 
 
@@ -129,6 +129,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
     /**
      * Method to clean up touch events
      */
+    @SuppressWarnings("unchecked")
     private void cleanTouch() {
         this.longPressHandler.removeCallbacks(this.longPressedRunnable);
         this.isLongPressHandlerActivated = false;
@@ -139,7 +140,9 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
     /**
      * Runnable which is used to identify a selection of an item.
      */
+    @SuppressWarnings("unchecked")
     private Runnable longPressedRunnable = new Runnable() {
+        @SuppressWarnings("unchecked")
         public void run() {
             isLongPressHandlerActivated = true;
             adapter.setItemToHighlight(pos);

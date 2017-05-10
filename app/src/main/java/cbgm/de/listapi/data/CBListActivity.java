@@ -62,6 +62,7 @@ public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapt
     /**
      * Method to update the adapter
      */
+    @SuppressWarnings("unchecked")
     public void updateAdapter(){
 
         // if not in sort mode remove touch from list container
@@ -88,6 +89,6 @@ public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapt
      * Method to get the updated data to use it in updateAdapter
      * @return the updated data
      */
-    public abstract List<E> getUpdatedData();
+    public abstract List<E>  getUpdatedData();
 
 }

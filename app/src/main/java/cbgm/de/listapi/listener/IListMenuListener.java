@@ -13,6 +13,7 @@ import cbgm.de.listapi.data.CBListViewItem;
 public interface IListMenuListener<E extends CBListViewItem> {
     void handleDelete(final Object o);
     void handleEdit(final Object o);
+    @SuppressWarnings("unused")
     void handleShow(final Object o);
     void handleSort(final List<E> list);
 }

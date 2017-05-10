@@ -135,6 +135,7 @@ public class SwipeListener implements View.OnTouchListener {
         return true;
     }
 
+    @SuppressWarnings("unused")
     public void setIOneClickListener(final IOneClickListener IOneClickListener) {
         this.IOneClickListener = IOneClickListener;
     }

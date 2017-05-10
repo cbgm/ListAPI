@@ -54,6 +54,7 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter im
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
+        @SuppressWarnings("unchecked")
         final E item =  (E) getItem(position);
         return item.getConvertView(position, convertView, parent, this.isSortMode, listMenuListener, highlightPos, this, inflator, this.context);
     }
@@ -88,7 +89,7 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter im
 
     /**
      * Method to the adapters data.
-     * @return
+     * @return the list
      */
     public List<E> getData(){
         return this.data;

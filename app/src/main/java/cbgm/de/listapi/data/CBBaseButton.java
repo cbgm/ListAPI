@@ -1,6 +1,7 @@
 package cbgm.de.listapi.data;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +77,7 @@ public class CBBaseButton {
         LinearLayout button = new LinearLayout(context);
         button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         button.setOrientation(LinearLayout.HORIZONTAL);
-        button.setBackgroundColor(context.getResources().getColor(colorId));
+        button.setBackgroundColor(ContextCompat.getColor(context, colId));
         button.setId(buttonId);
 
         ImageView image = new ImageView(context);
@@ -84,7 +85,7 @@ public class CBBaseButton {
         layoutParams.gravity = Gravity.CENTER | Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
         layoutParams.setMargins((int) context.getResources().getDimension(R.dimen.image_margin_left_right), 0, (int) context.getResources().getDimension(R.dimen.image_margin_left_right), 0);
         image.setLayoutParams(layoutParams);
-        image.setImageDrawable(context.getResources().getDrawable(imageId));
+        image.setImageDrawable(ContextCompat.getDrawable(context, imageId));
 
         button.addView(image);
 
@@ -100,7 +101,7 @@ public class CBBaseButton {
         LinearLayout button = new LinearLayout(context);
         button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         button.setOrientation(LinearLayout.HORIZONTAL);
-        button.setBackgroundColor(context.getResources().getColor(colId));
+        button.setBackgroundColor(ContextCompat.getColor(context, colId));
         button.setId(btnId);
         button.addView(customButtonView(context));
         return button;

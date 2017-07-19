@@ -86,6 +86,12 @@ public class SwipeListener implements View.OnTouchListener {
             }
 
             case MotionEvent.ACTION_UP: {
+
+                //if swipe was too short remove animation
+                if (-fromTempX < holder.buttonContainer.getWidth() / 2) {
+                    rollback();
+                }
+
                 if (this.dragActive && this.menuVisible) {
                     Log.d("LIST API", "Item released");
                     doAnimation(this.fromTempX, -this.holder.buttonContainer.getWidth());

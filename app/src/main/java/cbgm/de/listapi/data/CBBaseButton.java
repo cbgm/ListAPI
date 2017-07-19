@@ -77,7 +77,7 @@ public class CBBaseButton {
         LinearLayout button = new LinearLayout(context);
         button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         button.setOrientation(LinearLayout.HORIZONTAL);
-        button.setBackgroundColor(ContextCompat.getColor(context, colId));
+        button.setBackgroundColor(ContextCompat.getColor(context, colorId));
         button.setId(buttonId);
 
         ImageView image = new ImageView(context);

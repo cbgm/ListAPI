@@ -11,7 +11,6 @@ import android.widget.ListView;
  */
 
 public class CBListView extends ListView {
-    private int mPosition;
     private boolean shouldBlockScroll = false;
 
     public CBListView(Context context) {
@@ -28,28 +27,11 @@ public class CBListView extends ListView {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        final int actionMasked = ev.getActionMasked() & MotionEvent.ACTION_MASK;
+        final int action = ev.getActionMasked() & MotionEvent.ACTION_MASK;
 
-        if (actionMasked == MotionEvent.ACTION_DOWN) {
-            mPosition = pointToPosition((int) ev.getX(), (int) ev.getY());
-            return super.dispatchTouchEvent(ev);
-        }
-
-        if (actionMasked == MotionEvent.ACTION_MOVE) {
+        if (action == MotionEvent.ACTION_MOVE) {
             return this.shouldBlockScroll || super.dispatchTouchEvent(ev);
         }
-
-        if (actionMasked == MotionEvent.ACTION_UP) {
-
-            if (pointToPosition((int) ev.getX(), (int) ev.getY()) == mPosition) {
-                super.dispatchTouchEvent(ev);
-            } else {
-                setPressed(false);
-                invalidate();
-                return true;
-            }
-        }
-
         return super.dispatchTouchEvent(ev);
     }
 

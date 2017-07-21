@@ -1,6 +1,7 @@
 package cbgm.de.listapi.data;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -43,7 +44,7 @@ public class BaseView {
 
         GridLayout frontItem = new GridLayout(context);
         frontItem.setId(LayoutID.ITEM_FOREGROUND_ID);
-        frontItem.setBackgroundColor(context.getResources().getColor(R.color.cb_item_foreground_color));
+        frontItem.setBackgroundColor(ContextCompat.getColor(context, R.color.cb_item_foreground_color));
 
         mainContainer.addView(frontItem);
 

@@ -35,15 +35,18 @@ public class SwipeListener implements View.OnTouchListener {
     /* The listener to handle a single click */
     private IOneClickListener IOneClickListener;
 
+    private ISwipeNotifier iSwipeNotifier;
+
     /**
      * Constructor
      * @param holder the view holder
      * @param position the items position
      * @param IOneClickListener the listener to handle a single click
      */
-    public SwipeListener(final CBViewHolder holder, final int position, final IOneClickListener IOneClickListener) {
+    public SwipeListener(final CBViewHolder holder, final int position, final IOneClickListener IOneClickListener, final ISwipeNotifier iSwipeNotifier) {
         this.holder = holder;
         this.IOneClickListener = IOneClickListener;
+        this.iSwipeNotifier = iSwipeNotifier;
         this.listPosition = position;
         this.dragActive = false;
         this.menuVisible = false;
@@ -86,8 +89,7 @@ public class SwipeListener implements View.OnTouchListener {
             }
 
             case MotionEvent.ACTION_UP: {
-
-                //if swipe was too short remove animation
+                Log.d("LIST API", "Done: " + this.fromTempX + " container: " + -holder.buttonContainer.getWidth() / 2);
                 if (-fromTempX < holder.buttonContainer.getWidth() / 2) {
                     rollback();
                 }
@@ -97,6 +99,8 @@ public class SwipeListener implements View.OnTouchListener {
                     doAnimation(this.fromTempX, -this.holder.buttonContainer.getWidth());
                     this.dragActive = false;
                     this.holder.backItem.bringToFront();
+                    this.iSwipeNotifier.swipeActive(true);
+                    Log.d("LIST API", "Item clicked");
                 } else {
 
                     if (!this.dragActive && !this.menuVisible) {
@@ -120,12 +124,15 @@ public class SwipeListener implements View.OnTouchListener {
                     doAnimation(this.fromTempX, -this.holder.buttonContainer.getWidth());
                     this.dragActive = false;
                     this.holder.backItem.bringToFront();
+                    this.iSwipeNotifier.swipeActive(true);
+                    Log.d("LIST API", "Item clicked");
+                    //rollback();
                 } else {
 
                     if (!this.dragActive && !this.menuVisible) {
                         Log.d("LIST API", "Item clicked");
-                        //rollback();
-
+                        //rollback();rollback();
+                        rollback();
                         if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50))
                             this.IOneClickListener.handleSingleClick(listPosition);
                     } else {

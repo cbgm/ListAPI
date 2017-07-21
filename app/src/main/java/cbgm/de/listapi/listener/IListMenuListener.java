@@ -16,4 +16,5 @@ public interface IListMenuListener<E extends CBListViewItem> {
     @SuppressWarnings("unused")
     void handleShow(final Object o);
     void handleSort(final List<E> list);
+    void toggleListViewScrolling(final boolean isActive);
 }

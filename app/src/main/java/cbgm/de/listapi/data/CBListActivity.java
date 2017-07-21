@@ -3,8 +3,6 @@ package cbgm.de.listapi.data;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
-import android.widget.ListView;
-
 import java.util.List;
 
 import cbgm.de.listapi.R;
@@ -25,7 +23,7 @@ public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapt
     /* Set if sort mode of list should be active  */
     protected boolean isSortMode = false;
     /* The lists container within the layout */
-    protected ListView listContainer;
+    protected CBListView listContainer;
 
     @Override
     protected void onStart() {
@@ -43,7 +41,7 @@ public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapt
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cb_list_activity);
-        this.listContainer = (ListView) findViewById(R.id.list_container);
+        this.listContainer = (CBListView) findViewById(R.id.list_container);
         this.adapter = initAdapter();
         this.adapter.setListMenuListener(this);
         listContainer.setAdapter(this.adapter);
@@ -90,5 +88,9 @@ public abstract class CBListActivity<E extends CBListViewItem, T extends CBAdapt
      * @return the updated data
      */
     public abstract List<E>  getUpdatedData();
+
+    public void toggleListViewScrolling(final boolean isActive) {
+        this.listContainer.setShouldScroll(isActive);
+    }
 
 }

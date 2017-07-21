@@ -2,6 +2,7 @@ package cbgm.de.listapi.data;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.List;
 import cbgm.de.listapi.R;
 import cbgm.de.listapi.listener.IListMenuListener;
 import cbgm.de.listapi.listener.IOneClickListener;
+import cbgm.de.listapi.listener.ISwipeNotifier;
 import cbgm.de.listapi.listener.SwipeListener;
 
 
@@ -23,7 +25,7 @@ import cbgm.de.listapi.listener.SwipeListener;
  * @author Christian Bergmann
  */
 
-public abstract class CBListViewItem<V extends CBViewHolder, M>{
+public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwipeNotifier{
     /* The data element of the list view item */
     protected M item;
     /* The view holder */
@@ -38,6 +40,8 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
     protected boolean addEdit = false;
     /* Any other custom buttons (extend from CBBaseButton) */
     protected List<CBBaseButton> customButtons;
+
+    private IListMenuListener listMenuListener;
 
     /**
      * Constructor
@@ -80,7 +84,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
      * Method to get the expected view.
      * @param position the current postion of the item
      * @param convertView the convert view
-     * @param parent
+     * @param parent the parent view
      * @param isSortMode tells if in sort mode
      * @param listMenuListener the listener for clicks
      * @param highlightPos the position to highlight
@@ -91,6 +95,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
     public View getConvertView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final Context context) {
         convertView = isSortMode ? null: convertView;
         this.context = context;
+        this.listMenuListener = listMenuListener;
 
         if (convertView == null) {
             convertView = prepareView(parent, inflater, context);
@@ -100,7 +105,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
             }
         }
         holder = (V) convertView.getTag();
-        final SwipeListener swipeListener = new SwipeListener(holder, position, oneClickListener);
+        final SwipeListener swipeListener = new SwipeListener(holder, position, oneClickListener, this);
 
         if (!isSortMode) {
             holder.item.setOnTouchListener(swipeListener);
@@ -111,6 +116,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
                     public void onClick(View view) {
                         swipeListener.rollback();
                         listMenuListener.handleEdit(item);
+                        swipeActive(false);
                     }
                 });
             }
@@ -121,6 +127,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
                     public void onClick(View view) {
                         swipeListener.rollback();
                         listMenuListener.handleDelete(item);
+                        swipeActive(false);
                     }
                 });
             }
@@ -129,6 +136,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
                 @Override
                 public void onClick(View v) {
                     swipeListener.rollback();
+                    swipeActive(false);
                 }
             });
         } else {
@@ -184,14 +192,14 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
      * Method for setting up the view functionality (values, listeners).
      * @param position the current postion of the item
      * @param convertView the convert view
-     * @param parent
+     * @param parent the parent view
      * @param isSortMode tells if in sort mode
      * @param listMenuListener the listener for clicks
      * @param highlightPos the position to highlight
      * @param oneClickListener the single click listener
      * @param inflater the inflater
      * @param swipeListener the swipe listener
-     * @param context
+     * @param context the context
      */
     public abstract V setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final SwipeListener swipeListener, Context context);
 
@@ -201,4 +209,8 @@ public abstract class CBListViewItem<V extends CBViewHolder, M>{
      */
     public abstract V initView(View itemView, Context context);
 
+    public void swipeActive(final boolean isActive) {
+        this.listMenuListener.toggleListViewScrolling(isActive);
+        Log.d("LIST API", "isactive" + isActive);
+    }
 }

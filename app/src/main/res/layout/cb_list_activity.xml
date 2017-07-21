@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
 
-    <ListView
+    <cbgm.de.listapi.data.CBListView
         android:id="@+id/list_container"
         android:layout_height="match_parent"
         android:divider="@color/cb_list_divider_color"

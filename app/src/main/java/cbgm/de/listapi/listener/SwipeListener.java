@@ -1,5 +1,6 @@
 package cbgm.de.listapi.listener;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,7 +11,6 @@ import cbgm.de.listapi.data.CBViewHolder;
 /**
  * Listener for handling touch events of list items
  * - handles swiping behaviour
- * - click behaviour (uses {@link IOneClickListener})
  * @author Christian Bergmann
  */
 
@@ -33,7 +33,9 @@ public class SwipeListener implements View.OnTouchListener {
     /* The list items position */
     private int listPosition;
     /* The listener to handle a single click */
-    private IOneClickListener IOneClickListener;
+    private IListMenuListener iListMenuListener;
+    /* The handler which identifies a selection */
+    private final Handler longPressHandler = new Handler();
 
     private ISwipeNotifier iSwipeNotifier;
 
@@ -41,11 +43,11 @@ public class SwipeListener implements View.OnTouchListener {
      * Constructor
      * @param holder the view holder
      * @param position the items position
-     * @param IOneClickListener the listener to handle a single click
+     * @param iListMenuListener the listener to handle a single click
      */
-    public SwipeListener(final CBViewHolder holder, final int position, final IOneClickListener IOneClickListener, final ISwipeNotifier iSwipeNotifier) {
+    public SwipeListener(final CBViewHolder holder, final int position, final IListMenuListener iListMenuListener, final ISwipeNotifier iSwipeNotifier) {
         this.holder = holder;
-        this.IOneClickListener = IOneClickListener;
+        this.iListMenuListener = iListMenuListener;
         this.iSwipeNotifier = iSwipeNotifier;
         this.listPosition = position;
         this.dragActive = false;
@@ -57,6 +59,7 @@ public class SwipeListener implements View.OnTouchListener {
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN: {
+                this.longPressHandler.postDelayed(this.longPressedRunnable, 1000);
                 this.fromX = motionEvent.getX();
                 this.fromY = motionEvent.getY();
                 Log.d("LIST API", "Item is clicked for swiping from: " + this.fromX + " to: " + this.toX);
@@ -108,12 +111,13 @@ public class SwipeListener implements View.OnTouchListener {
                         //rollback();
 
                         if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50))
-                            this.IOneClickListener.handleSingleClick(listPosition);
+                            this.iListMenuListener.handleSingleClick(listPosition);
                     } else {
                         rollback();
                     }
 
                 }
+                cleanLongClick();
                 return true;
             }
 
@@ -134,12 +138,13 @@ public class SwipeListener implements View.OnTouchListener {
                         //rollback();rollback();
                         rollback();
                         if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50))
-                            this.IOneClickListener.handleSingleClick(listPosition);
+                            this.iListMenuListener.handleSingleClick(listPosition);
                     } else {
                         rollback();
                     }
 
                 }
+                cleanLongClick();
                 return true;
             }
             default:
@@ -149,8 +154,8 @@ public class SwipeListener implements View.OnTouchListener {
     }
 
     @SuppressWarnings("unused")
-    public void setIOneClickListener(final IOneClickListener IOneClickListener) {
-        this.IOneClickListener = IOneClickListener;
+    public void setIOneClickListener(final IListMenuListener iListMenuListener) {
+        this.iListMenuListener = iListMenuListener;
     }
 
     /**
@@ -166,6 +171,10 @@ public class SwipeListener implements View.OnTouchListener {
         this.menuVisible = false;
     }
 
+    public void cleanLongClick() {
+        this.longPressHandler.removeCallbacks(this.longPressedRunnable);
+    }
+
     /**
      * Method to do the animation for the swiping
      * @param startAt the starting x point
@@ -177,4 +186,15 @@ public class SwipeListener implements View.OnTouchListener {
         animate.setFillAfter(true);
         this.holder.item.startAnimation(animate);
     }
+
+    /**
+     * Runnable which is used to identify a selection of an item.
+     */
+    @SuppressWarnings("unchecked")
+    private Runnable longPressedRunnable = new Runnable() {
+        @SuppressWarnings("unchecked")
+        public void run() {
+            iListMenuListener.handleLongClick(listPosition);
+        }
+    };
 }

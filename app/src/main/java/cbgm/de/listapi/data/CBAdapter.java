@@ -16,13 +16,14 @@ import cbgm.de.listapi.listener.IOneClickListener;
  * The adapter for the list
  * @author Christian Bergmann
  */
-public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter implements IOneClickListener {
+public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
 
     protected Context context;
     protected final LayoutInflater inflator;
     protected IListMenuListener listMenuListener;
     protected List<E> data;
     protected boolean isSortMode = false;
+    protected boolean isSelectMode = false;
     protected int highlightPos = -1;
 
     /**
@@ -56,14 +57,8 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter im
     public View getView(final int position, View convertView, final ViewGroup parent) {
         @SuppressWarnings("unchecked")
         final E item =  (E) getItem(position);
-        return item.getConvertView(position, convertView, parent, this.isSortMode, listMenuListener, highlightPos, this, inflator, this.context);
+        return item.getConvertView(position, convertView, parent, this.isSortMode, this.isSelectMode, listMenuListener, highlightPos, inflator, this.context);
     }
-
-    @Override
-    public abstract void handleSingleClick(final int position);
-
-    @Override
-    public abstract void handleLongClick(final int position);
 
     public void setListMenuListener(final IListMenuListener listMenuListener) {
         this.listMenuListener = listMenuListener;

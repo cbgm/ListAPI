@@ -88,11 +88,10 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
      * @param isSortMode tells if in sort mode
      * @param listMenuListener the listener for clicks
      * @param highlightPos the position to highlight
-     * @param oneClickListener the single click listener
      * @param inflater the inflater
      * @return the convert view
      */
-    public View getConvertView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final Context context) {
+    public View getConvertView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final boolean isSelectMode, final IListMenuListener listMenuListener, final int highlightPos, final LayoutInflater inflater, final Context context) {
         convertView = isSortMode ? null: convertView;
         this.context = context;
         this.listMenuListener = listMenuListener;
@@ -105,9 +104,9 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
             }
         }
         holder = (V) convertView.getTag();
-        final SwipeListener swipeListener = new SwipeListener(holder, position, oneClickListener, this);
+        final SwipeListener swipeListener = new SwipeListener(holder, position, listMenuListener, this);
 
-        if (!isSortMode) {
+        if (!isSortMode && !isSelectMode) {
             holder.item.setOnTouchListener(swipeListener);
 
             if (addEdit) {
@@ -139,7 +138,8 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
                     swipeActive(false);
                 }
             });
-        } else {
+
+        } else if (isSortMode || isSelectMode) {
             holder.item.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -153,7 +153,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
                 holder.item.setBackgroundColor(Color.WHITE);
             }
         }
-        setUpView(position, convertView, parent, isSortMode, listMenuListener, highlightPos, oneClickListener, inflater, swipeListener, context);
+        setUpView(position, convertView, parent, isSortMode, isSelectMode, listMenuListener, highlightPos, inflater, swipeListener, context);
         return convertView;
     }
 
@@ -196,12 +196,11 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
      * @param isSortMode tells if in sort mode
      * @param listMenuListener the listener for clicks
      * @param highlightPos the position to highlight
-     * @param oneClickListener the single click listener
      * @param inflater the inflater
      * @param swipeListener the swipe listener
      * @param context the context
      */
-    public abstract V setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final SwipeListener swipeListener, Context context);
+    public abstract V setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final boolean isSelectMode, final IListMenuListener listMenuListener, final int highlightPos, final LayoutInflater inflater, final SwipeListener swipeListener, Context context);
 
     /**
      * Method for initializing the view.

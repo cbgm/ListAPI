@@ -2,6 +2,7 @@ package cbgm.de.listapi.data;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,7 +16,6 @@ import java.util.List;
 
 import cbgm.de.listapi.R;
 import cbgm.de.listapi.listener.IListMenuListener;
-import cbgm.de.listapi.listener.IOneClickListener;
 import cbgm.de.listapi.listener.ISwipeNotifier;
 import cbgm.de.listapi.listener.SwipeListener;
 
@@ -40,6 +40,8 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
     protected boolean addEdit = false;
     /* Any other custom buttons (extend from CBBaseButton) */
     protected List<CBBaseButton> customButtons;
+    /*Holder for the first selected position*/
+    private int firstSelectedPosition = -1;
 
     private IListMenuListener listMenuListener;
 
@@ -49,9 +51,10 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
      * @param holder the view holder
      * @param itemResource the id of the layout to inflate which represents the foreground
      */
-    public CBListViewItem(final M item, final V holder, final int itemResource) {
+    public CBListViewItem(final M item, final V holder, final int itemResource, final int firstSelectedPosition) {
         this.item = item;
         this.itemResource = itemResource;
+        this.firstSelectedPosition = firstSelectedPosition;
         this.holder = holder;
         this.customButtons = new ArrayList<>();
     }
@@ -92,7 +95,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
      * @return the convert view
      */
     public View getConvertView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final boolean isSelectMode, final IListMenuListener listMenuListener, final int highlightPos, final LayoutInflater inflater, final Context context) {
-        convertView = isSortMode ? null: convertView;
+        convertView = isSortMode || isSelectMode ? null: convertView;
         this.context = context;
         this.listMenuListener = listMenuListener;
 
@@ -108,6 +111,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
 
         if (!isSortMode && !isSelectMode) {
             holder.item.setOnTouchListener(swipeListener);
+            holder.item.setBackgroundColor(Color.WHITE);
 
             if (addEdit) {
                 holder.edit.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +143,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
                 }
             });
 
-        } else if (isSortMode || isSelectMode) {
+        } else {
             holder.item.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -147,10 +151,30 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
                 }
             });
 
-            if (highlightPos == position && highlightPos != -1) {
-                holder.item.setBackgroundColor(Color.rgb(219,235,226));
+            if (isSortMode) {
+
+                if (highlightPos == position && highlightPos != -1) {
+                    holder.item.setBackgroundColor(Color.rgb(219,235,226));
+                } else {
+                    holder.item.setBackgroundColor(Color.WHITE);
+                }
             } else {
-                holder.item.setBackgroundColor(Color.WHITE);
+                holder.item.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (((ColorDrawable)holder.item.getBackground()).getColor() == Color.WHITE) {
+                            holder.item.setBackgroundColor(Color.rgb(219,235,226));
+                        } else {
+                            holder.item.setBackgroundColor(Color.WHITE);
+                        }
+                        listMenuListener.handleSingleClick(position);
+                    }
+                });
+
+                if (firstSelectedPosition == position) {
+                    firstSelectedPosition = -1;
+                    holder.item.setBackgroundColor(Color.rgb(219,235,226));
+                }
             }
         }
         setUpView(position, convertView, parent, isSortMode, isSelectMode, listMenuListener, highlightPos, inflater, swipeListener, context);

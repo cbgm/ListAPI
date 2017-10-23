@@ -36,6 +36,8 @@ public class SwipeListener implements View.OnTouchListener {
     private IListMenuListener iListMenuListener;
     /* The handler which identifies a selection */
     private final Handler longPressHandler = new Handler();
+    /*Tells if the long click was successful and therefore select is active*/
+    private boolean isLongClick = false;
 
     private ISwipeNotifier iSwipeNotifier;
 
@@ -110,7 +112,7 @@ public class SwipeListener implements View.OnTouchListener {
                         Log.d("LIST API", "Item clicked");
                         //rollback();
 
-                        if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50))
+                        if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50) && !isLongClick)
                             this.iListMenuListener.handleSingleClick(listPosition);
                     } else {
                         rollback();
@@ -137,7 +139,7 @@ public class SwipeListener implements View.OnTouchListener {
                         Log.d("LIST API", "Item clicked");
                         //rollback();rollback();
                         rollback();
-                        if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50))
+                        if (!((motionEvent.getY() - this.fromY) > 50 || (this.fromY - motionEvent.getY()) > 50) && !isLongClick)
                             this.iListMenuListener.handleSingleClick(listPosition);
                     } else {
                         rollback();
@@ -173,6 +175,7 @@ public class SwipeListener implements View.OnTouchListener {
 
     public void cleanLongClick() {
         this.longPressHandler.removeCallbacks(this.longPressedRunnable);
+        this.isLongClick = false;
     }
 
     /**
@@ -194,6 +197,7 @@ public class SwipeListener implements View.OnTouchListener {
     private Runnable longPressedRunnable = new Runnable() {
         @SuppressWarnings("unchecked")
         public void run() {
+            isLongClick = true;
             iListMenuListener.handleLongClick(listPosition);
         }
     };

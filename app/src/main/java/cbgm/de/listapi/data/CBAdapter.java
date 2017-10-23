@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 import java.util.List;
 
 import cbgm.de.listapi.listener.IListMenuListener;
-import cbgm.de.listapi.listener.IOneClickListener;
 
 
 /**
@@ -68,8 +67,9 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
      * Method to reninit the listview if some major changes happened
      * @param data the data to update
      */
-    public void reInit(final List<E> data, final boolean isSortMode) {
+    public void reInit(final List<E> data, final boolean isSortMode, final boolean isSelectMode) {
         this.isSortMode = isSortMode;
+        this.isSelectMode = isSelectMode;
         this.data = data;
         notifyDataSetChanged();
     }

@@ -8,7 +8,8 @@ import android.widget.BaseAdapter;
 
 import java.util.List;
 
-import cbgm.de.listapi.listener.IListMenuListener;
+import cbgm.de.listapi.listener.CBListMode;
+import cbgm.de.listapi.listener.ICBActionNotifier;
 
 
 /**
@@ -19,10 +20,9 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
 
     protected Context context;
     protected final LayoutInflater inflator;
-    protected IListMenuListener listMenuListener;
+    protected ICBActionNotifier listMenuListener;
     protected List<E> data;
-    protected boolean isSortMode = false;
-    protected boolean isSelectMode = false;
+    protected CBListMode mode;
     protected int highlightPos = -1;
 
     /**
@@ -30,8 +30,9 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
      * @param context the application context
      * @param data the data to fill
      */
-    public CBAdapter(Context context, List<E> data) {
+    public CBAdapter(final Context context, final List<E> data, final CBListMode mode) {
         this.data = data;
+        this.mode = mode;
         this.context= context;
         this.inflator = LayoutInflater.from(context);
     }
@@ -56,21 +57,21 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
     public View getView(final int position, View convertView, final ViewGroup parent) {
         @SuppressWarnings("unchecked")
         final E item =  (E) getItem(position);
-        return item.getConvertView(position, convertView, parent, this.isSortMode, this.isSelectMode, listMenuListener, highlightPos, inflator, this.context);
+        return item.getConvertView(position, convertView, parent, this.mode, listMenuListener, highlightPos, inflator, this.context);
     }
 
-    public void setListMenuListener(final IListMenuListener listMenuListener) {
+    public void setActionListener(final ICBActionNotifier listMenuListener) {
         this.listMenuListener = listMenuListener;
     }
 
     /**
      * Method to reninit the listview if some major changes happened
-     * @param data the data to update
      */
-    public void reInit(final List<E> data, final boolean isSortMode, final boolean isSelectMode) {
-        this.isSortMode = isSortMode;
-        this.isSelectMode = isSelectMode;
+    public void reInit(final List<E> data, final CBListMode mode) {
+        this.data.clear();
         this.data = data;
+        if (mode != CBListMode.NULL)
+            this.mode = mode;
         notifyDataSetChanged();
     }
 

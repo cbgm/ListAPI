@@ -14,7 +14,7 @@ import cbgm.de.listapi.data.CBViewHolder;
  * @author Christian Bergmann
  */
 
-public class SwipeListener implements View.OnTouchListener {
+public class CBSwipeListener implements View.OnTouchListener {
 
     /* Tells if swipe is active */
     private boolean dragActive;
@@ -33,13 +33,13 @@ public class SwipeListener implements View.OnTouchListener {
     /* The list items position */
     private int listPosition;
     /* The listener to handle a single click */
-    private IListMenuListener iListMenuListener;
+    private ICBActionNotifier iListMenuListener;
     /* The handler which identifies a selection */
     private final Handler longPressHandler = new Handler();
     /*Tells if the long click was successful and therefore select is active*/
     private boolean isLongClick = false;
 
-    private ISwipeNotifier iSwipeNotifier;
+    private ICBSwipeNotifier iSwipeNotifier;
 
     /**
      * Constructor
@@ -47,7 +47,7 @@ public class SwipeListener implements View.OnTouchListener {
      * @param position the items position
      * @param iListMenuListener the listener to handle a single click
      */
-    public SwipeListener(final CBViewHolder holder, final int position, final IListMenuListener iListMenuListener, final ISwipeNotifier iSwipeNotifier) {
+    public CBSwipeListener(final CBViewHolder holder, final int position, final ICBActionNotifier iListMenuListener, final ICBSwipeNotifier iSwipeNotifier) {
         this.holder = holder;
         this.iListMenuListener = iListMenuListener;
         this.iSwipeNotifier = iSwipeNotifier;
@@ -69,7 +69,7 @@ public class SwipeListener implements View.OnTouchListener {
             }
 
             case MotionEvent.ACTION_MOVE: {
-
+                Log.d("LIST API", "Move action");
                 if (this.toX == 0 && motionEvent.getX() < this.fromX) {
                     this.toX = motionEvent.getX();
                 }
@@ -90,6 +90,7 @@ public class SwipeListener implements View.OnTouchListener {
                         this.menuVisible = true;
                     }
                 }
+                cleanLongClick();
                 return true;
             }
 
@@ -156,7 +157,7 @@ public class SwipeListener implements View.OnTouchListener {
     }
 
     @SuppressWarnings("unused")
-    public void setIOneClickListener(final IListMenuListener iListMenuListener) {
+    public void setClickListener(final ICBActionNotifier iListMenuListener) {
         this.iListMenuListener = iListMenuListener;
     }
 

@@ -98,7 +98,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
                         //swap elements
                         Collections.swap(this.sequenceList, arFromPos, arToPos);
                         this.adapter.setItemToHighlight(this.pos);
-                        this.adapter.reInit(this.sequenceList, true);
+                        this.adapter.reInit(this.sequenceList, true, false);
                     }
 
                 }
@@ -134,7 +134,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
         this.longPressHandler.removeCallbacks(this.longPressedRunnable);
         this.isLongPressHandlerActivated = false;
         this.adapter.setItemToHighlight(-1);
-        this.adapter.reInit(this.sequenceList, true);
+        this.adapter.reInit(this.sequenceList, true, false);
     }
 
     /**
@@ -146,7 +146,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
         public void run() {
             isLongPressHandlerActivated = true;
             adapter.setItemToHighlight(pos);
-            adapter.reInit(sequenceList, true);
+            adapter.reInit(sequenceList, true, false);
 
             AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
             Vibrator vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);

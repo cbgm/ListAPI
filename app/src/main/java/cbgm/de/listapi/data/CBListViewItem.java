@@ -42,6 +42,10 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
     protected List<CBBaseButton> customButtons;
     /*Holder for the first selected position*/
     private int firstSelectedPosition = -1;
+    /*Tells if item is selected*/
+    private boolean isSelected = false;
+    /*color for selected item*/
+    private int highlightColor = Color.LTGRAY;//Color.rgb(219,235,226);
 
     private IListMenuListener listMenuListener;
 
@@ -154,7 +158,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
             if (isSortMode) {
 
                 if (highlightPos == position && highlightPos != -1) {
-                    holder.item.setBackgroundColor(Color.rgb(219,235,226));
+                    holder.item.setBackgroundColor(highlightColor);
                 } else {
                     holder.item.setBackgroundColor(Color.WHITE);
                 }
@@ -163,9 +167,11 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
                     @Override
                     public void onClick(View v) {
                         if (((ColorDrawable)holder.item.getBackground()).getColor() == Color.WHITE) {
-                            holder.item.setBackgroundColor(Color.rgb(219,235,226));
+                            holder.item.setBackgroundColor(highlightColor);
+                            isSelected = true;
                         } else {
                             holder.item.setBackgroundColor(Color.WHITE);
+                            isSelected = false;
                         }
                         listMenuListener.handleSingleClick(position);
                     }
@@ -173,8 +179,10 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
 
                 if (firstSelectedPosition == position) {
                     firstSelectedPosition = -1;
-                    holder.item.setBackgroundColor(Color.rgb(219,235,226));
+                    isSelected = true;
+                    holder.item.setBackgroundColor(highlightColor);
                 }
+                holder.item.setBackgroundColor(isSelected? highlightColor : Color.WHITE);
             }
         }
         setUpView(position, convertView, parent, isSortMode, isSelectMode, listMenuListener, highlightPos, inflater, swipeListener, context);
@@ -235,5 +243,9 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
     public void swipeActive(final boolean isActive) {
         this.listMenuListener.toggleListViewScrolling(isActive);
         Log.d("LIST API", "isactive" + isActive);
+    }
+
+    public void setHighlightColor(int highlightColor) {
+        this.highlightColor = highlightColor;
     }
 }

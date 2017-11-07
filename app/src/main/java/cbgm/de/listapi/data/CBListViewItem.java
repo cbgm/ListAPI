@@ -2,10 +2,8 @@ package cbgm.de.listapi.data;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -15,9 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cbgm.de.listapi.R;
-import cbgm.de.listapi.listener.IListMenuListener;
-import cbgm.de.listapi.listener.ISwipeNotifier;
-import cbgm.de.listapi.listener.SwipeListener;
+import cbgm.de.listapi.listener.CBListMode;
+import cbgm.de.listapi.listener.CBSelectListener;
+import cbgm.de.listapi.listener.CBSwipeListener;
+import cbgm.de.listapi.listener.ICBActionNotifier;
+import cbgm.de.listapi.listener.ICBSwipeNotifier;
 
 
 /**
@@ -25,7 +25,7 @@ import cbgm.de.listapi.listener.SwipeListener;
  * @author Christian Bergmann
  */
 
-public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwipeNotifier{
+public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSwipeNotifier {
     /* The data element of the list view item */
     protected M item;
     /* The view holder */
@@ -46,8 +46,8 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
     private boolean isSelected = false;
     /*color for selected item*/
     private int highlightColor = Color.LTGRAY;//Color.rgb(219,235,226);
-
-    private IListMenuListener listMenuListener;
+    /*The listener for click events*/
+    private ICBActionNotifier listMenuListener;
 
     /**
      * Constructor
@@ -92,14 +92,14 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
      * @param position the current postion of the item
      * @param convertView the convert view
      * @param parent the parent view
-     * @param isSortMode tells if in sort mode
+     * @param mode tells the mode of the list
      * @param listMenuListener the listener for clicks
      * @param highlightPos the position to highlight
      * @param inflater the inflater
      * @return the convert view
      */
-    public View getConvertView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final boolean isSelectMode, final IListMenuListener listMenuListener, final int highlightPos, final LayoutInflater inflater, final Context context) {
-        convertView = isSortMode || isSelectMode ? null: convertView;
+    public View getConvertView(final int position, View convertView, final ViewGroup parent, final CBListMode mode, final ICBActionNotifier listMenuListener, final int highlightPos, final LayoutInflater inflater, final Context context) {
+        //convertView = isSortMode || isSelectMode ? null: convertView;
         this.context = context;
         this.listMenuListener = listMenuListener;
 
@@ -111,81 +111,64 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
             }
         }
         holder = (V) convertView.getTag();
-        final SwipeListener swipeListener = new SwipeListener(holder, position, listMenuListener, this);
 
-        if (!isSortMode && !isSelectMode) {
-            holder.item.setOnTouchListener(swipeListener);
-            holder.item.setBackgroundColor(Color.WHITE);
+        final CBSwipeListener swipeListener = new CBSwipeListener(holder, position, listMenuListener, this);
+        final CBSelectListener selectListener = new CBSelectListener(holder, position, listMenuListener , isSelected, firstSelectedPosition);
 
-            if (addEdit) {
-                holder.edit.setOnClickListener(new View.OnClickListener() {
+        switch (mode) {
+            case SWIPE:
+                holder.item.setOnTouchListener(swipeListener);
+                holder.item.setBackgroundColor(Color.WHITE);
+
+                if (addEdit) {
+                    holder.edit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            swipeListener.rollback();
+                            listMenuListener.handleEdit(item);
+                            swipeActive(false);
+                        }
+                    });
+                }
+
+                if (addDelete) {
+                    holder.delete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            swipeListener.rollback();
+                            listMenuListener.handleDelete(item);
+                            swipeActive(false);
+                        }
+                    });
+                }
+
+                holder.backItem.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View v) {
                         swipeListener.rollback();
-                        listMenuListener.handleEdit(item);
                         swipeActive(false);
                     }
                 });
-            }
-
-            if (addDelete) {
-                holder.delete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        swipeListener.rollback();
-                        listMenuListener.handleDelete(item);
-                        swipeActive(false);
-                    }
-                });
-            }
-
-            holder.backItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    swipeListener.rollback();
-                    swipeActive(false);
-                }
-            });
-
-        } else {
-            holder.item.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    return false;
-                }
-            });
-
-            if (isSortMode) {
-
+                break;
+            case SELECT:
+                holder.item.setOnClickListener(selectListener);
+                break;
+            case SORT:
+                //highlight item with different color if dragged
                 if (highlightPos == position && highlightPos != -1) {
                     holder.item.setBackgroundColor(highlightColor);
                 } else {
                     holder.item.setBackgroundColor(Color.WHITE);
                 }
-            } else {
-                holder.item.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (((ColorDrawable)holder.item.getBackground()).getColor() == Color.WHITE) {
-                            holder.item.setBackgroundColor(highlightColor);
+                break;
+            default:
+                break;
                             isSelected = true;
-                        } else {
-                            holder.item.setBackgroundColor(Color.WHITE);
                             isSelected = false;
-                        }
-                        listMenuListener.handleSingleClick(position);
-                    }
-                });
-
-                if (firstSelectedPosition == position) {
-                    firstSelectedPosition = -1;
-                    isSelected = true;
                     holder.item.setBackgroundColor(highlightColor);
-                }
                 holder.item.setBackgroundColor(isSelected? highlightColor : Color.WHITE);
-            }
         }
-        setUpView(position, convertView, parent, isSortMode, isSelectMode, listMenuListener, highlightPos, inflater, swipeListener, context);
+        setUpView(position, convertView, parent, mode, listMenuListener, highlightPos, inflater, swipeListener, context);
         return convertView;
     }
 
@@ -225,14 +208,14 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
      * @param position the current postion of the item
      * @param convertView the convert view
      * @param parent the parent view
-     * @param isSortMode tells if in sort mode
+     * @param mode tells the mode of the list
      * @param listMenuListener the listener for clicks
      * @param highlightPos the position to highlight
      * @param inflater the inflater
      * @param swipeListener the swipe listener
      * @param context the context
      */
-    public abstract V setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final boolean isSelectMode, final IListMenuListener listMenuListener, final int highlightPos, final LayoutInflater inflater, final SwipeListener swipeListener, Context context);
+    public abstract V setUpView(final int position, View convertView, final ViewGroup parent, final CBListMode mode, final ICBActionNotifier listMenuListener, final int highlightPos, final LayoutInflater inflater, final CBSwipeListener swipeListener, Context context);
 
     /**
      * Method for initializing the view.
@@ -245,7 +228,20 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ISwip
         Log.d("LIST API", "isactive" + isActive);
     }
 
+    /**
+     * Method to set the highlight color.
+     * (necessary for sort and select mode)
+     * @param highlightColor the color
+     */
     public void setHighlightColor(int highlightColor) {
         this.highlightColor = highlightColor;
+    }
+
+    /**
+     * Method to set the first selected position when select is activated and listeners are switched.
+     * @param pos the position
+     */
+    public void setFirstSelectedPosition(int pos) {
+        this.firstSelectedPosition = pos;
     }
 }

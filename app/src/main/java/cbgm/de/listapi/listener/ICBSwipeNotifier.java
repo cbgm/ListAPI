@@ -5,6 +5,6 @@ package cbgm.de.listapi.listener;
  * @author Christian Bergmann
  */
 
-public interface ISwipeNotifier {
+public interface ICBSwipeNotifier {
     void swipeActive(final boolean isActive);
 }

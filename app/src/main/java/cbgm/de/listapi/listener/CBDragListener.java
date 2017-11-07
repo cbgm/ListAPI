@@ -24,7 +24,7 @@ import cbgm.de.listapi.data.CBListViewItem;
  * @author Christian Bergmann
  */
 
-public class DragListener<E extends CBListViewItem, T extends CBAdapter> implements View.OnTouchListener {
+public class CBDragListener<E extends CBListViewItem, T extends CBAdapter> implements View.OnTouchListener {
     /* The item which is dragged */
     private E dragedSequence = null;
     /* Tells if the handler which identifies as selection is successful  */
@@ -34,7 +34,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
     /* The position which is moved */
     private int pos;
     /* The listener to pass the new sorted list */
-    private IListMenuListener IListMenuListener;
+    private ICBActionNotifier IListMenuListener;
     /* The container of list */
     private ListView listContainer;
     /* The list adapter */
@@ -44,7 +44,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
     /* The application context */
     private Context context;
 
-    public DragListener(final List<E> sequenceList, T baseAdapter, ListView listContainer, Context context) {
+    public CBDragListener(final List<E> sequenceList, T baseAdapter, ListView listContainer, Context context) {
         this.sequenceList = sequenceList;
         this.adapter = baseAdapter;
         this.listContainer = listContainer;
@@ -84,13 +84,6 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
                     E switchedSequence = (E) listContainer.getAdapter().getItem(this.pos);
                     int arFromPos = this.sequenceList.indexOf(this.dragedSequence);
                     int arToPos = this.sequenceList.indexOf(switchedSequence);
-                    /*int x = -1;
-                    for(int i = 0; i < this.sequenceList.size(); i++) {
-                        if(this.sequenceList.get(i).equals(switchedSequence)) {
-                            x = i;
-                            break;
-                        }
-                    }*/
                     //switch moving numbers
 
                     if (arFromPos != arToPos) {
@@ -98,7 +91,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
                         //swap elements
                         Collections.swap(this.sequenceList, arFromPos, arToPos);
                         this.adapter.setItemToHighlight(this.pos);
-                        this.adapter.reInit(this.sequenceList, true, false);
+                        this.adapter.init(this.sequenceList, CBListMode.SORT);
                     }
 
                 }
@@ -122,7 +115,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
     }
 
 
-    public void setSortListener(IListMenuListener IListMenuListener) {
+    public void setSortListener(ICBActionNotifier IListMenuListener) {
         this.IListMenuListener = IListMenuListener;
     }
 
@@ -134,7 +127,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
         this.longPressHandler.removeCallbacks(this.longPressedRunnable);
         this.isLongPressHandlerActivated = false;
         this.adapter.setItemToHighlight(-1);
-        this.adapter.reInit(this.sequenceList, true, false);
+        this.adapter.init(this.sequenceList, CBListMode.SORT);
     }
 
     /**
@@ -146,17 +139,7 @@ public class DragListener<E extends CBListViewItem, T extends CBAdapter> impleme
         public void run() {
             isLongPressHandlerActivated = true;
             adapter.setItemToHighlight(pos);
-            adapter.reInit(sequenceList, true, false);
-
-            AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-            Vibrator vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-
-            if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE || am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
-                vibrator.vibrate(40);
-            } else if (1 == Settings.System.getInt(context.getContentResolver(), "vibrate_when_ringing", 0)) {
-                vibrator.vibrate(40);
-            }
-            Log.d("LIST API", "Item ready to move");
+            adapter.init(sequenceList, CBListMode.SORT);
         }
     };
 }

@@ -84,13 +84,6 @@ public class CBDragListener<E extends CBListViewItem, T extends CBAdapter> imple
                     E switchedSequence = (E) listContainer.getAdapter().getItem(this.pos);
                     int arFromPos = this.sequenceList.indexOf(this.dragedSequence);
                     int arToPos = this.sequenceList.indexOf(switchedSequence);
-                    /*int x = -1;
-                    for(int i = 0; i < this.sequenceList.size(); i++) {
-                        if(this.sequenceList.get(i).equals(switchedSequence)) {
-                            x = i;
-                            break;
-                        }
-                    }*/
                     //switch moving numbers
 
                     if (arFromPos != arToPos) {
@@ -98,7 +91,7 @@ public class CBDragListener<E extends CBListViewItem, T extends CBAdapter> imple
                         //swap elements
                         Collections.swap(this.sequenceList, arFromPos, arToPos);
                         this.adapter.setItemToHighlight(this.pos);
-                        this.adapter.reInit(this.sequenceList, CBListMode.SORT);
+                        this.adapter.init(this.sequenceList, CBListMode.SORT);
                     }
 
                 }
@@ -134,7 +127,7 @@ public class CBDragListener<E extends CBListViewItem, T extends CBAdapter> imple
         this.longPressHandler.removeCallbacks(this.longPressedRunnable);
         this.isLongPressHandlerActivated = false;
         this.adapter.setItemToHighlight(-1);
-        this.adapter.reInit(this.sequenceList, CBListMode.SORT);
+        this.adapter.init(this.sequenceList, CBListMode.SORT);
     }
 
     /**
@@ -146,17 +139,7 @@ public class CBDragListener<E extends CBListViewItem, T extends CBAdapter> imple
         public void run() {
             isLongPressHandlerActivated = true;
             adapter.setItemToHighlight(pos);
-            adapter.reInit(sequenceList, CBListMode.SORT);
-
-            AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-            Vibrator vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-
-            if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE || am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
-                vibrator.vibrate(40);
-            } else if (1 == Settings.System.getInt(context.getContentResolver(), "vibrate_when_ringing", 0)) {
-                vibrator.vibrate(40);
-            }
-            Log.d("LIST API", "Item ready to move");
+            adapter.init(sequenceList, CBListMode.SORT);
         }
     };
 }

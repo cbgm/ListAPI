@@ -17,12 +17,17 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  * @author Christian Bergmann
  */
 public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
-
+    /*The application context*/
     protected Context context;
+    /*The layout inflator*/
     protected final LayoutInflater inflator;
+    /*Listener for list item click events*/
     protected ICBActionNotifier listMenuListener;
+    /*The list items*/
     protected List<E> data;
+    /*The list mode*/
     protected CBListMode mode;
+    /*The position to highlight in sort mode*/
     protected int highlightPos = -1;
 
     /**
@@ -34,6 +39,14 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
         this.data = data;
         this.mode = mode;
         this.context= context;
+        this.inflator = LayoutInflater.from(context);
+    }
+    /**
+     * Constructor
+     * @param context the application context
+     */
+    public CBAdapter(final Context context) {
+        this.context = context;
         this.inflator = LayoutInflater.from(context);
     }
 
@@ -65,10 +78,11 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
     }
 
     /**
-     * Method to reninit the listview if some major changes happened
+     * Method to init the adapter
      */
-    public void reInit(final List<E> data, final CBListMode mode) {
-        this.data.clear();
+    public void init(final List<E> data, final CBListMode mode) {
+       /* if (mode != CBListMode.SORT && this.data != null)
+            this.data.clear();*/
         this.data = data;
         if (mode != CBListMode.NULL)
             this.mode = mode;

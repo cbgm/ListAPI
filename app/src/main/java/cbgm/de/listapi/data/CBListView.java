@@ -21,12 +21,16 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  */
 
 public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends ListView implements ICBActionNotifier<E> {
+    /*The list mode*/
     protected CBListMode mode = CBListMode.SWIPE;
+    /*Tells if scrolling of list should be blocked (necessary when deleting a single item)*/
     protected boolean shouldBlockScroll = false;
+    /*Listener to forward list item click events*/
     protected ICBActionDelegate<E> deletegateListener;
+    /*The list adapter*/
     protected T adapter;
 
-    private ArrayList<Boolean> selectedItems;
+    protected ArrayList<Boolean> selectedItems;
     /*first selected position*/
     protected int firstSelectedPosition = -1;
 
@@ -54,7 +58,6 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
 
     public void setAdapter(T adapter) {
         this.adapter = adapter;
-        this.mode = CBListMode.SWIPE;
         this.adapter.setActionListener(this);
         super.setAdapter(this.adapter);
     }
@@ -89,6 +92,7 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
 
     public final void handleSelect(final int position) {
         Log.d("LIST_API", "item selected");
+
         if (position != -1)
             this.selectedItems.set(position, !this.selectedItems.get(position));
         deletegateListener.delegateHandleSelect(position);
@@ -117,7 +121,7 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
             }
 
             if (!hasSelection) {
-                switchMode(CBListMode.SWIPE);
+                init(CBListMode.SELECT, this.adapter.getData(), this.adapter);
                 Log.d("LIST API", "off select");
             }
             return;
@@ -130,7 +134,7 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
         //check if not in selection mode
         if (this.mode != CBListMode.SELECT) {
             firstSelectedPosition = position;
-            switchMode(CBListMode.SELECT);
+            init(CBListMode.SELECT, this.adapter.getData(), this.adapter);
         }
         deletegateListener.delegateLongClick(position);
     }
@@ -150,7 +154,7 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
      * Method to get the selected positions of the tetruns for further processing
      * @return the positions
      */
-    protected List<Integer> getSelectedPositions(){
+    public List<Integer> getSelectedPositions(){
         List<Integer> positions = new ArrayList<>();
 
         for(int i=0; i < this.selectedItems.size(); i++){
@@ -162,41 +166,66 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
         return positions;
     }
 
+    /**
+     * Method to prepare list items for mode change if necessary.
+     * @param data the list items
+     */
+    protected void prepareListItems(final List<E> data) {
 
-    private void switchMode(final CBListMode mode) {
-        List<E> temp = new ArrayList<>((List<E>) this.adapter.getData());
-
-        switch (mode) {
+        switch (this.mode) {
             case SWIPE:
-                for (E item : temp)
-                    item.setFirstSelectedPosition(-1);
-                this.adapter.reInit(temp, mode);
+                this.setOnTouchListener(null);
+                this.adapter.init(data, this.mode);
                 break;
             case SELECT:
                 setSelectedItems();
                 handleSelect(firstSelectedPosition);
-                for (E item : temp)
+
+                for (E item : data)
                     item.setFirstSelectedPosition(firstSelectedPosition);
                 firstSelectedPosition = -1;
-                Log.d("LIST API", "in select");
-                this.adapter.reInit(temp, mode);
+                this.adapter.init(data, this.mode);
                 break;
             case SORT:
-                for (E item : temp)
-                    item.setFirstSelectedPosition(-1);
-                this.adapter.reInit(temp, mode);
-                CBDragListener<E, T> dragListener = new CBDragListener<>(temp, this.adapter, this, getContext());
+                this.adapter.init(data, this.mode);
+                this.adapter.setItemToHighlight(-1);
+                CBDragListener<E, T> dragListener = new CBDragListener<>(data, this.adapter, this, getContext());
                 dragListener.setSortListener(this);
                 this.setOnTouchListener(dragListener);
                 break;
             default:
                 break;
         }
-        this.mode = mode;
     }
 
+    /**
+     * Method to initialize the list view
+     * @param mode the list mode
+     * @param data the list items
+     * @param adapter the adapter
+     */
+    public void init(final CBListMode mode, final List<E> data, T adapter) {
+        this.mode = mode;
+        this.adapter = adapter;
+        prepareListItems(data);
+        setAdapter(this.adapter);
+    }
+
+    /**
+     * Method to set the delegate listener for forwarding list item click events
+     * @param delegateListener the listener
+     */
     public void setDelegateListener(final ICBActionDelegate delegateListener) {
         this.deletegateListener = delegateListener;
     }
+
+    /**
+     * Method to return the list mode
+     * @return the list mode
+     */
+    public CBListMode getMode() {
+        return this.mode;
+    }
+
 
 }

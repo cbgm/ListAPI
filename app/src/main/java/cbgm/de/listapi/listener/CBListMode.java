@@ -1,7 +1,8 @@
 package cbgm.de.listapi.listener;
 
 /**
- * Created by SA_Admin on 25.10.2017.
+ * List item modes.
+ * @author Christian Bergmann
  */
 
 public enum CBListMode {

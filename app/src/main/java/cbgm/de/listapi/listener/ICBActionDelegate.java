@@ -5,7 +5,8 @@ import java.util.List;
 import cbgm.de.listapi.data.CBListViewItem;
 
 /**
- * Created by SA_Admin on 26.10.2017.
+ * Listener to delegate list item click events.
+ * @author Christian Bergmann
  */
 
 public interface ICBActionDelegate<E extends CBListViewItem> {

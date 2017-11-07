@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -47,7 +46,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
     private boolean isSelected = false;
     /*color for selected item*/
     private int highlightColor = Color.LTGRAY;//Color.rgb(219,235,226);
-
+    /*The listener for click events*/
     private ICBActionNotifier listMenuListener;
 
     /**
@@ -113,8 +112,6 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
         }
         holder = (V) convertView.getTag();
 
-        holder.item.setOnClickListener(null);
-        holder.item.setOnTouchListener(null);
         final CBSwipeListener swipeListener = new CBSwipeListener(holder, position, listMenuListener, this);
         final CBSelectListener selectListener = new CBSelectListener(holder, position, listMenuListener , isSelected, firstSelectedPosition);
 
@@ -154,17 +151,10 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
                 });
                 break;
             case SELECT:
-                holder.item.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        return false;
-                    }
-                });
-
                 holder.item.setOnClickListener(selectListener);
-
                 break;
             case SORT:
+                //highlight item with different color if dragged
                 if (highlightPos == position && highlightPos != -1) {
                     holder.item.setBackgroundColor(highlightColor);
                 } else {
@@ -234,10 +224,19 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
         Log.d("LIST API", "isactive" + isActive);
     }
 
+    /**
+     * Method to set the highlight color.
+     * (necessary for sort and select mode)
+     * @param highlightColor the color
+     */
     public void setHighlightColor(int highlightColor) {
         this.highlightColor = highlightColor;
     }
 
+    /**
+     * Method to set the first selected position when select is activated and listeners are switched.
+     * @param pos the position
+     */
     public void setFirstSelectedPosition(int pos) {
         this.firstSelectedPosition = pos;
     }

@@ -46,23 +46,13 @@ It also supports multiple list items!
  
 ###### Setup the functionality
 
-        public MyHolder setUpView(final int position, View convertView, final ViewGroup parent, final boolean isSortMode, final IListMenuListener listMenuListener, final int highlightPos, final IOneClickListener oneClickListener, final LayoutInflater inflater, final SwipeListener swipeListener, Context context) {
+        public MyViewHolder setUpView(final int position, View convertView, final ViewGroup parent, final CBListMode mode, final ICBActionNotifier listMenuListener, final int highlightPos, final LayoutInflater inflater, final CBSwipeListener swipeListener, Context context) {
 
-            MyHolder test = (MyHolder)holder;
-            test.name.setText(item);
-            test.name.setEnabled(true);
-            test.name.setTextColor(Color.GREEN);
-            if (isSortMode) {
-                test.name.setOnClickListener(null);
-            } else {
-                test.name.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listMenuListener.handleShow(item);
-                    }
-                });
-            }
-            return test;
+        MyViewHolder test = (MyViewHolder)holder;
+        test.name.setText(item);
+        test.name.setEnabled(true);
+        test.name.setTextColor(Color.GREEN);
+        return test
         }
 
 ###### Init the the layout to the holder
@@ -76,113 +66,71 @@ It also supports multiple list items!
         
 2. Define the Adapter which connects the list and extend from CBAdapter
         
-        public class MyAdapter extends CBAdapter<MyListViewItem> {
-            public MyAdapter(Context context, List<MyListViewItem> data) {
-                super(context, data);
-            }
-
-            @Override
-            public void handleSingleClick(final int position) {
-                final String item = (String) this.data.get(position).getItem();
-                Toast.makeText(context, "got to next view", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void handleLongClick(int position) {
-
+        public class MyAdapter extends CBAdapter<ViewItem> {
+            public MyAdapter(Context context, List<ViewItem> data, CBListMode mode) {
+                super(context, data, mode);
             }
         }
 
 3. Define the Activity which uses the list and extend from CBActivity
 
-        public class MainActivity extends CBListActivity<ViewItem, MyAdapter> {
-            private static final int MENU_ITEM_ITEM1 = 1;
+        public class MyFragment extends Fragment implements ICBActionDelegate, MyMenuListener {
             List<ViewItem> test;
-
+            CBListView listContainer;
+            MyAdapter adapter;
+            Boolean isSortMode = false;
+            private static final int MENU_ITEM_ITEM1 = 1;
             @Override
-            public void onResume() {
-                super.onResume();
-                updateData();
-                updateAdapter();
+            public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                     Bundle savedInstanceState) {
+
+                View rootView = inflater.inflate(R.layout.fragment, container, false);
+                this.listContainer = (CBListView) rootView.findViewById(R.id.list_container);
+                this.listContainer.setDelegateListener(this);
+                this.adapter = new MyAdapter(getContext(), loadData(), CBListMode.SWIPE);
+                setHasOptionsMenu(true);
+                this.listContainer.init(CBListMode.SWIPE, loadData(), adapter);
+                return rootView;
+
             }
 
-            public MyAdapter initAdapter() {
+            public List loadData() {
                 this.test = new ArrayList<>();
+                int type = 1;
+                test = new ArrayList<>();
                 for (int i = 0; i < 20; i++) {
 
-                    String item = "item 11111111111" + i;
+                    if (type == 1) {
+                        String item = "item 11111111111" + i;
                     
 ###### Add list elements (needs the data, the holder and the layout)
 
-                    MyListViewItem li = new MyListViewItem(item, new MyHolder(), R.layout.foreground_standard);
+                    MyListViewItem li = new MyListViewItem(item, new MyViewHolder(), R.layout.backitem_standard, this, -1);
                     test.add(li);
                 }
-                return new MyAdapter(this, test);
-            }
-
-            @Override
-            public void updateData() {
-
-            }
-
-            public List<ViewItem> getUpdatedData() {
-                return this.test;
-            }
-
-###### Standard calls for built in buttons delete and edit  (must not be used)
-
-            @Override
-            public void handleDelete(Object o) {
-                Toast.makeText(getBaseContext(), "delete", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void handleEdit(Object o) {
-                Toast.makeText(getApplicationContext(), "edit", Toast.LENGTH_SHORT).show();
+                return test;
             }
 
 ###### When the foreground was clicked do at least something
 
             @Override
-            public void handleShow(Object o) {
-                Toast.makeText(getApplicationContext(), "show", Toast.LENGTH_SHORT).show();
-            }
+            public void delegateSingleClick(int position) {
 
+            }
 
 ###### Called when sorting is done
 
             @Override
-            public void handleSort(List<ViewItem> list) {
-                test = new ArrayList<>(list);
-                updateAdapter();
-                Toast.makeText(getApplicationContext(), "sort", Toast.LENGTH_SHORT).show();
-            }
+            public void delegateSort(List list) {
 
-            @Override
-            public boolean onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.NONE, MENU_ITEM_ITEM1, Menu.NONE, "Sort: " + isSortMode).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                return true;
             }
+        }     
+4. Switch the list mode
 
-            @Override
-            public boolean onOptionsItemSelected(MenuItem item) {
-                switch (item.getItemId()) {
-                    case MENU_ITEM_ITEM1:
-                    
-###### Switch to sort mode
-                        this.isSortMode = !this.isSortMode;
-                        item.setTitle("Sort: " + isSortMode);
-                        updateData();
-                        updateAdapter();
-                        return true;
+        this.listContainer.init(CBListMode.SORT, loadData(), adapter);
 
-                    default:
-                        return false;
-                }
-            }
-        }
         
-3. 
+5. 
 
 ## Example
 

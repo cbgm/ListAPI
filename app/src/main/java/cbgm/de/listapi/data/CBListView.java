@@ -121,7 +121,7 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
             }
 
             if (!hasSelection) {
-                init(CBListMode.SELECT, this.adapter.getData(), this.adapter);
+                init(CBListMode.SWIPE, this.adapter.getData(), this.adapter);
                 Log.d("LIST API", "off select");
             }
             return;

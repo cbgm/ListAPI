@@ -59,7 +59,7 @@ public class CBDragListener<E extends CBListViewItem, T extends CBAdapter> imple
 
             //When an item is clicked start handler to tell if sort is wanted and get the items current position for later use
             case MotionEvent.ACTION_DOWN:
-                this.longPressHandler.postDelayed(this.longPressedRunnable, 1000);
+                this.longPressHandler.postDelayed(this.longPressedRunnable, 400);
                 this.pos = this.listContainer.pointToPosition((int) motionEvent.getX(), (int) motionEvent.getY());
 
                 if (this.pos < 0) {

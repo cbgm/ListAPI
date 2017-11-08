@@ -61,7 +61,7 @@ public class CBSwipeListener implements View.OnTouchListener {
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                this.longPressHandler.postDelayed(this.longPressedRunnable, 1000);
+                this.longPressHandler.postDelayed(this.longPressedRunnable, 400);
                 this.fromX = motionEvent.getX();
                 this.fromY = motionEvent.getY();
                 Log.d("LIST API", "Item is clicked for swiping from: " + this.fromX + " to: " + this.toX);
@@ -83,6 +83,12 @@ public class CBSwipeListener implements View.OnTouchListener {
                     this.fromTempX = motionEvent.getX() - this.toX;
                     float move = this.fromTempX - 1;
 
+                    //check if long click should be canceled (offset for real device)
+                    if (move < -20) {
+                        cleanLongClick();
+
+                    }
+
                     if (move > -holder.buttonContainer.getWidth() / 2) {
                         Log.d("LIST API", "Swiping from: " + this.fromTempX + " to: " + move);
                         doAnimation(this.fromTempX, move);
@@ -90,7 +96,8 @@ public class CBSwipeListener implements View.OnTouchListener {
                         this.menuVisible = true;
                     }
                 }
-                cleanLongClick();
+
+                //cleanLongClick();
                 return true;
             }
 

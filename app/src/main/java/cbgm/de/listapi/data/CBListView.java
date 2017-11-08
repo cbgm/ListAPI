@@ -134,7 +134,8 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
         //check if not in selection mode
         if (this.mode != CBListMode.SELECT) {
             firstSelectedPosition = position;
-            init(CBListMode.SELECT, this.adapter.getData(), this.adapter);
+            //call different init here because if the list is longer than the screen it will jump up
+            init(CBListMode.SELECT, this.adapter.getData());
         }
         deletegateListener.delegateLongClick(position);
     }
@@ -209,6 +210,15 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
         this.adapter = adapter;
         prepareListItems(data);
         setAdapter(this.adapter);
+    }
+    /**
+     * Method to initialize the list view
+     * @param mode the list mode
+     * @param data the list items
+     */
+    public void init(final CBListMode mode, final List<E> data) {
+        this.mode = mode;
+        prepareListItems(data);
     }
 
     /**

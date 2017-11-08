@@ -96,8 +96,6 @@ public class CBSwipeListener implements View.OnTouchListener {
                         this.menuVisible = true;
                     }
                 }
-
-                //cleanLongClick();
                 return true;
             }
 

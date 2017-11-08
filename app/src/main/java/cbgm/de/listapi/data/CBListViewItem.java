@@ -99,29 +99,29 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
      * @return the convert view
      */
     public View getConvertView(final int position, View convertView, final ViewGroup parent, final CBListMode mode, final ICBActionNotifier listMenuListener, final int highlightPos, final LayoutInflater inflater, final Context context) {
-        //convertView = isSortMode || isSelectMode ? null: convertView;
+        convertView = mode == CBListMode.SORT ? null: convertView;
         this.context = context;
         this.listMenuListener = listMenuListener;
 
         if (convertView == null) {
             convertView = prepareView(parent, inflater, context);
         } else {
-            if (!((convertView.getTag()).getClass().isInstance(holder))){
+            if (!((convertView.getTag()).getClass().isInstance(this.holder))){
                 convertView = prepareView(parent, inflater, context);
             }
         }
-        holder = (V) convertView.getTag();
+        this.holder = (V) convertView.getTag();
 
         final CBSwipeListener swipeListener = new CBSwipeListener(holder, position, listMenuListener, this);
         final CBSelectListener selectListener = new CBSelectListener(holder, position, listMenuListener , isSelected, firstSelectedPosition);
 
         switch (mode) {
             case SWIPE:
-                holder.item.setOnTouchListener(swipeListener);
-                holder.item.setBackgroundColor(Color.WHITE);
+                this.holder.item.setOnTouchListener(swipeListener);
+                this.holder.item.setBackgroundColor(Color.WHITE);
 
                 if (addEdit) {
-                    holder.edit.setOnClickListener(new View.OnClickListener() {
+                    this.holder.edit.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             swipeListener.rollback();
@@ -132,7 +132,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
                 }
 
                 if (addDelete) {
-                    holder.delete.setOnClickListener(new View.OnClickListener() {
+                    this.holder.delete.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             swipeListener.rollback();
@@ -142,7 +142,7 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
                     });
                 }
 
-                holder.backItem.setOnClickListener(new View.OnClickListener() {
+                this.holder.backItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         swipeListener.rollback();
@@ -151,22 +151,18 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
                 });
                 break;
             case SELECT:
-                holder.item.setOnClickListener(selectListener);
+                this.holder.item.setOnClickListener(selectListener);
                 break;
             case SORT:
                 //highlight item with different color if dragged
                 if (highlightPos == position && highlightPos != -1) {
-                    holder.item.setBackgroundColor(highlightColor);
+                    this.holder.item.setBackgroundColor(highlightColor);
                 } else {
-                    holder.item.setBackgroundColor(Color.WHITE);
+                    this.holder.item.setBackgroundColor(Color.WHITE);
                 }
                 break;
             default:
                 break;
-                            isSelected = true;
-                            isSelected = false;
-                    holder.item.setBackgroundColor(highlightColor);
-                holder.item.setBackgroundColor(isSelected? highlightColor : Color.WHITE);
         }
         setUpView(position, convertView, parent, mode, listMenuListener, highlightPos, inflater, swipeListener, context);
         return convertView;
@@ -179,27 +175,27 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
      */
     protected View prepareView(final ViewGroup parent, final LayoutInflater inflater, final Context context) {
         View itemView = BaseView.getView(context);
-        holder.item = (GridLayout)itemView.findViewById(LayoutID.ITEM_FOREGROUND_ID);
-        holder.buttonContainer = (LinearLayout) itemView.findViewById(LayoutID.BUTTON_CONTAINER_ID);
+        this.holder.item = (GridLayout)itemView.findViewById(LayoutID.ITEM_FOREGROUND_ID);
+        this.holder.buttonContainer = (LinearLayout) itemView.findViewById(LayoutID.BUTTON_CONTAINER_ID);
 
         if (addEdit) {
-            holder.buttonContainer.addView(new CBBaseButton().getButton(LayoutID.EDIT_BUTTON_ID, context, R.color.cb_edit_background_color, R.mipmap.edit_icon));
-            holder.edit = (LinearLayout) itemView.findViewById(LayoutID.EDIT_BUTTON_ID);
+            this.holder.buttonContainer.addView(new CBBaseButton().getButton(LayoutID.EDIT_BUTTON_ID, context, R.color.cb_edit_background_color, R.mipmap.edit_icon));
+            this.holder.edit = (LinearLayout) itemView.findViewById(LayoutID.EDIT_BUTTON_ID);
         }
 
         if (addDelete) {
-            holder.buttonContainer.addView(new CBBaseButton().getButton(LayoutID.DELETE_BUTTON_ID, context, R.color.cb_delete_background_color, R.mipmap.trash_icon));
-            holder.delete = (LinearLayout) itemView.findViewById(LayoutID.DELETE_BUTTON_ID);
+            this.holder.buttonContainer.addView(new CBBaseButton().getButton(LayoutID.DELETE_BUTTON_ID, context, R.color.cb_delete_background_color, R.mipmap.trash_icon));
+            this.holder.delete = (LinearLayout) itemView.findViewById(LayoutID.DELETE_BUTTON_ID);
         }
 
         for (CBBaseButton customButton : customButtons) {
-            holder.buttonContainer.addView(customButton.getCustomButton(context));
+            this.holder.buttonContainer.addView(customButton.getCustomButton(context));
         }
-        holder.backItem = (LinearLayout) itemView.findViewById(LayoutID.ITEM_BACKGROUND_ID);
+        this.holder.backItem = (LinearLayout) itemView.findViewById(LayoutID.ITEM_BACKGROUND_ID);
         View personalView = inflater.inflate(this.itemResource, parent, false);
-        holder.item.addView(personalView);
-        holder = initView(itemView, context);
-        itemView.setTag(holder);
+        this.holder.item.addView(personalView);
+        this.holder = initView(itemView, context);
+        itemView.setTag(this.holder);
         return itemView;
     }
 

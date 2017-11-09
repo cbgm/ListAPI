@@ -204,6 +204,7 @@ public class CBSwipeListener implements View.OnTouchListener {
         @SuppressWarnings("unchecked")
         public void run() {
             isLongClick = true;
+            rollback();
             iListMenuListener.handleLongClick(listPosition);
         }
     };

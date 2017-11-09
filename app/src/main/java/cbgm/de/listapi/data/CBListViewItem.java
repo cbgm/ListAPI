@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -114,6 +115,12 @@ public abstract class CBListViewItem<V extends CBViewHolder, M> implements ICBSw
 
         final CBSwipeListener swipeListener = new CBSwipeListener(holder, position, listMenuListener, this);
         final CBSelectListener selectListener = new CBSelectListener(holder, position, listMenuListener , isSelected, firstSelectedPosition);
+        this.holder.item.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
 
         switch (mode) {
             case SWIPE:

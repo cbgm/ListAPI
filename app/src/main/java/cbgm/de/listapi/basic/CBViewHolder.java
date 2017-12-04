@@ -1,4 +1,4 @@
-package cbgm.de.listapi.data;
+package cbgm.de.listapi.basic;
 
 import android.widget.GridLayout;
 import android.widget.LinearLayout;

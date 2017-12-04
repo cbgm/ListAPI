@@ -2,21 +2,19 @@ package cbgm.de.listapi.listener;
 
 import java.util.List;
 
-import cbgm.de.listapi.data.CBListViewItem;
+import cbgm.de.listapi.basic.CBListViewItem;
 
 
 /**
- * Listener for a list items menu when item was swiped to the left
+ * Listener for a list items actions
  * @author Christian Bergmann
  */
 
 public interface ICBActionNotifier<E extends CBListViewItem> {
-    void handleDelete(final Object o);
-    void handleEdit(final Object o);
-    @SuppressWarnings("unused")
-    void handleShow(final Object o);
-    void handleSort(final List<E> list);
-    void toggleListViewScrolling(final boolean isActive);
-    void handleSingleClick(final int position);
-    void handleLongClick(final int position);
+    void deleteAction(final Object o);
+    void editAction(final Object o);
+    void sortAction(final List<E> list);
+    void swipeAction();
+    void singleClickAction(final int position);
+    void longClickAction(final int position);
 }

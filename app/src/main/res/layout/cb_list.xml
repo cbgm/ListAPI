@@ -1,4 +1,4 @@
-<cbgm.de.listapi.data.CBListView xmlns:android="http://schemas.android.com/apk/res/android"
+<cbgm.de.listapi.basic.CBListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_container"
     android:layout_height="match_parent"
     android:divider="@color/cb_list_divider_color"

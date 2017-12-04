@@ -2,15 +2,15 @@ package cbgm.de.listapi.handler.type;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ListView;
 
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.basic.CBListViewItem;
+import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
@@ -20,16 +20,22 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  */
 
 public abstract class CBTouchType implements View.OnTouchListener {
-    protected List<CBListViewItem> sequenceList;
+    //the list item data
+    protected List<CBListItem> data;
+    //the recycler adapter
     protected CBAdapter adapter;
-    protected ListView listContainer;
+    //the recycler view
+    protected RecyclerView listContainer;
+    //the notifier when a list action is triggered
     protected ICBActionNotifier actionNotifier;
+    //handler for a long press event (long click of gesture detector is not always usable)
     final Handler longPressHandler;
     final CBModeHelper modeHelper;
-    protected GestureDetector gestureDetector;
+    //detector for different gestures
+    private GestureDetector gestureDetector;
 
-    public CBTouchType(final List<CBListViewItem> sequenceList, CBAdapter baseAdapter, ListView listContainer, ICBActionNotifier actionNotifier, Context context) {
-        this.sequenceList = sequenceList;
+    public CBTouchType(final List<CBListItem> data, CBAdapter baseAdapter, RecyclerView listContainer, ICBActionNotifier actionNotifier, Context context) {
+        this.data = data;
         this.adapter = baseAdapter;
         this.listContainer = listContainer;
         this.actionNotifier = actionNotifier;
@@ -59,6 +65,9 @@ public abstract class CBTouchType implements View.OnTouchListener {
      */
     public abstract void cleanTouch();
 
+    /**
+     * the gesture detector
+     */
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
         private static final int SWIPE_OFFSET = 20;
@@ -89,7 +98,6 @@ public abstract class CBTouchType implements View.OnTouchListener {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            boolean result = false;
 
             try {
                 float diffY = e2.getY() - e1.getY();
@@ -117,7 +125,7 @@ public abstract class CBTouchType implements View.OnTouchListener {
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
-            return result;
+            return false;
         }
     }
 
@@ -126,64 +134,64 @@ public abstract class CBTouchType implements View.OnTouchListener {
      * @param start the starting event
      * @param end the end event
      */
-    public void onSwipeRight(MotionEvent start, MotionEvent end) {
+    protected void onSwipeRight(MotionEvent start, MotionEvent end) {
     }
     /**
      * Method called when swiped left.
      * @param start the starting event
      * @param end the end event
      */
-    public void onSwipeLeft(MotionEvent start, MotionEvent end) {
+    protected void onSwipeLeft(MotionEvent start, MotionEvent end) {
     }
     /**
      * Method called when swiped down.
      * @param start the starting event
      * @param end the end event
      */
-    public void onSwipeDown(MotionEvent start, MotionEvent end) {
+    protected void onSwipeDown(MotionEvent start, MotionEvent end) {
     }
     /**
      * Method called when swiped up.
      * @param start the starting event
      * @param end the end event
      */
-    public void onSwipeUp(MotionEvent start, MotionEvent end) {
+    protected void onSwipeUp(MotionEvent start, MotionEvent end) {
     }
     /**
      * Method called when clicked.
      * @param e the motion event
      */
-    public void onClick(MotionEvent e) {
+    protected void onClick(MotionEvent e) {
     }
     /**
      * Method called when swiped right.
      * @param e the motion event
      */
-    public void onDoubleClick(MotionEvent e) {
+    protected void onDoubleClick(MotionEvent e) {
     }
     /**
      * Method called when double clicked.
      * @param e the motion event
      */
-    public void onLongClick(MotionEvent e) {
+    protected void onLongClick(MotionEvent e) {
     }
     /**
      * Method called when pushed down.
      * @param e the motion event
      */
-    public void onInitialDown(MotionEvent e) {
+    protected void onInitialDown(MotionEvent e) {
     }
     /**
      * Method called when released.
      * @param e the motion event
      */
-    public void onUp(MotionEvent e) {
+    protected void onUp(MotionEvent e) {
     }
     /**
      * Method called when moved.
      * @param e the motion event
      */
-    public void onMove(MotionEvent e) {
+    protected void onMove(MotionEvent e) {
     }
 
 }

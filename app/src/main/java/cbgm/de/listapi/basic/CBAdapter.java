@@ -1,13 +1,12 @@
 package cbgm.de.listapi.basic;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
 import java.util.List;
 
+import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 
@@ -15,44 +14,44 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  * The adapter for the list
  * @author Christian Bergmann
  */
-public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
+public abstract class CBAdapter<H extends CBViewHolder<CBListItem>> extends RecyclerView.Adapter<H> {
     /*The application context*/
     protected Context context;
-    /*The layout inflator*/
-    protected final LayoutInflater inflator;
     /*Listener for list item click events*/
-    protected ICBActionNotifier listMenuListener;
+    protected ICBActionNotifier actionNotifier;
     /*The list items*/
-    protected List<E> data;
+    protected List<CBListItem> data;
 
-    /**
-     * Constructor
-     * @param context the application context
-     * @param data the data to fill
-     */
-    public CBAdapter(final Context context, final List<E> data) {
-        this.data = data;
-        this.context= context;
-        this.inflator = LayoutInflater.from(context);
-    }
     /**
      * Constructor
      * @param context the application context
      */
     public CBAdapter(final Context context) {
         this.context = context;
-        this.inflator = LayoutInflater.from(context);
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return this.data.size();
     }
 
-    @Override
-    public Object getItem(final int position) {
+    protected CBListItem getItem(final int position) {
         return this.data.get(position);
+    }
 
+    @Override
+    public void onBindViewHolder(final H holder, final int position) {
+        holder.addFunctionalityOnView(getItem(position), position, this.actionNotifier, this.context);
+    }
+
+    @Override
+    public int getItemViewType(final int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
+    public H onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        return null;
     }
 
     @Override
@@ -60,21 +59,14 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
         return position;
     }
 
-    @Override
-    public View getView(final int position, View convertView, final ViewGroup parent) {
-        @SuppressWarnings("unchecked")
-        final E item =  (E) getItem(position);
-        return item.getConvertView(position, convertView, parent, listMenuListener, inflator, this.context);
-    }
-
-    public void setActionListener(final ICBActionNotifier listMenuListener) {
-        this.listMenuListener = listMenuListener;
+    public void setActionListener(final ICBActionNotifier actionNotifier) {
+        this.actionNotifier = actionNotifier;
     }
 
     /**
      * Method to init the adapter
      */
-    public void init(final List<E> data) {
+    public void init(final List<CBListItem> data) {
         this.data = data;
         notifyDataSetChanged();
     }
@@ -83,8 +75,7 @@ public abstract class CBAdapter<E extends CBListViewItem> extends BaseAdapter {
      * Method to the adapters data.
      * @return the list
      */
-    public List<E> getData(){
+    public List<CBListItem> getData(){
         return this.data;
     }
-
 }

@@ -1,15 +1,15 @@
 package cbgm.de.listapi.basic;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.data.CBListMode;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.handler.CBTouchHandler;
@@ -21,16 +21,16 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  * @author Christian Bergmann
  */
 
-public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends ListView implements ICBActionNotifier<E> {
+public class CBListView extends RecyclerView implements ICBActionNotifier {
     /*Listener to forward list item click events*/
-    protected ICBActionDelegate<E> deletegateListener;
+    protected ICBActionDelegate deletegateListener;
     /*The list adapter*/
-    protected T adapter;
-
+    protected CBAdapter adapter;
+    //touch handler for switching the possible touch types (swipe, sort, select)
     protected CBTouchHandler touchHandler;
 
     protected CBModeHelper modeHelper = CBModeHelper.getInstance();
-
+    //array mirrors the positions of the selected items
     protected ArrayList<Boolean> selectedItems;
 
     public CBListView(Context context) {
@@ -54,14 +54,14 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
         return super.dispatchTouchEvent(ev);
     }
 
-     public void setAdapter(T adapter) {
+     public void setAdapter(CBAdapter adapter) {
         this.adapter = adapter;
         this.adapter.setActionListener(this);
         super.setAdapter(this.adapter);
     }
 
-    public ListAdapter getAdapter() {
-        return (T)super.getAdapter();
+    public CBAdapter getAdapter() {
+        return this.adapter;
     }
 
     @Override
@@ -138,9 +138,9 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
      * Method to initialize the selected items with a default value
      */
     protected void setSelectedItems(){
-        this.selectedItems = new ArrayList<>(getAdapter().getCount());
+        this.selectedItems = new ArrayList<>(getAdapter().getItemCount());
 
-        for(int i=0; i < getAdapter().getCount(); i++){
+        for(int i=0; i < getAdapter().getItemCount(); i++){
             this.selectedItems.add(false);
         }
     }
@@ -166,20 +166,12 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
      * @param data the list items
      * @param adapter the adapter
      */
-    public void init(final List<E> data, T adapter) {
+    public void init(final List<CBListItem> data, CBAdapter adapter) {
         this.adapter = adapter;
-        this.touchHandler = new CBTouchHandler(data, this.adapter, this, this, getContext());
+        this.touchHandler = new CBTouchHandler<>(data, this.adapter, this, this, getContext());
         this.setOnTouchListener(touchHandler);
         this.adapter.init(data);
         setAdapter(this.adapter);
-    }
-    /**
-     * Method to initialize the list view
-     * @param data the list items
-     */
-    public void init(final List<E> data) {
-        CBTouchHandler touchHandler = new CBTouchHandler(data, this.adapter, this, this, getContext());
-        this.setOnTouchListener(touchHandler);
     }
 
     /**
@@ -194,7 +186,12 @@ public class CBListView<E extends CBListViewItem, T extends CBAdapter> extends L
      * Method to get the touch handler (can bes used to clean up touch events)
      * @return the CBTouchHandler
      */
-    public CBTouchHandler getToucHandler() {
+    public CBTouchHandler getTouchHandler() {
         return this.touchHandler;
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
     }
 }

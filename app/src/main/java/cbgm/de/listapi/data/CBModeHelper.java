@@ -54,7 +54,7 @@ public class CBModeHelper {
     }
 
     public void setListMode(CBListMode listMode) {
-        this.modeChanged = this.listMode == listMode ? false : true;
+        this.modeChanged = this.listMode != listMode;
         this.listMode = listMode;
     }
 
@@ -82,7 +82,7 @@ public class CBModeHelper {
         return buttonClicked;
     }
 
-    public void setButtonClicked(boolean buttonClicked) {
+    public void setButtonClicked(final boolean buttonClicked) {
         this.buttonClicked = buttonClicked;
     }
 

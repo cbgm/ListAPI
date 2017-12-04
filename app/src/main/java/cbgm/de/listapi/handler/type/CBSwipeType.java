@@ -3,16 +3,17 @@ package cbgm.de.listapi.handler.type;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.TranslateAnimation;
-import android.widget.ListView;
 
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.basic.CBListViewItem;
 import cbgm.de.listapi.basic.CBViewHolder;
+import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 /**
@@ -27,14 +28,14 @@ public class CBSwipeType extends CBTouchType {
     //the view holder the list element relies on
     private CBViewHolder holder;
 
-    public CBSwipeType(List<CBListViewItem> sequenceList, CBAdapter baseAdapter, ListView listContainer, ICBActionNotifier actionNotifier, Context context) {
-        super(sequenceList, baseAdapter, listContainer, actionNotifier, context);
+    public CBSwipeType(List<CBListItem> data, CBAdapter baseAdapter, RecyclerView listContainer, ICBActionNotifier actionNotifier, Context context) {
+        super(data, baseAdapter, listContainer, actionNotifier, context);
     }
 
     @Override
     public void cleanTouch() {
         Log.d("LIST API", "Item swipe rollback");
-        this.holder.item.bringToFront();
+        this.holder.getFrontItem().bringToFront();
         doAnimation(-this.fromX, 0);
         this.fromX = -1;
         this.modeHelper.setSwipeActive(false);
@@ -45,7 +46,7 @@ public class CBSwipeType extends CBTouchType {
         TranslateAnimation animate = new TranslateAnimation(startAt, endAt, 0, 0);
         animate.setDuration(100);
         animate.setFillAfter(true);
-        this.holder.item.startAnimation(animate);
+        this.holder.getFrontItem().startAnimation(animate);
     }
 
     @Override
@@ -53,10 +54,10 @@ public class CBSwipeType extends CBTouchType {
         Log.d("LIST API", "Item long clicked");
 
        if (!this.modeHelper.isSwipeActive()) {
-           if (((ColorDrawable)holder.item.getBackground()).getColor() == Color.WHITE) {
-               holder.item.setBackgroundColor(Color.LTGRAY);
+           if (((ColorDrawable)holder.getFrontItem().getBackground()).getColor() == Color.WHITE) {
+               holder.getFrontItem().setBackgroundColor(Color.LTGRAY);
            } else {
-               holder.item.setBackgroundColor(Color.WHITE);
+               holder.getFrontItem().setBackgroundColor(Color.WHITE);
            }
            //cleanTouch();
            actionNotifier.longClickAction(pos);
@@ -65,11 +66,12 @@ public class CBSwipeType extends CBTouchType {
 
     @Override
     public void onInitialDown(MotionEvent e) {
-        this.pos = this.listContainer.pointToPosition((int) e.getX(), (int) e.getY());
+        View view = this.listContainer.findChildViewUnder((int) e.getX(), (int) e.getY());
+        this.pos = this.listContainer.getChildAdapterPosition(view);
 
         if (!this.modeHelper.isSwipeActive() && this.pos != -1) {
             this.fromX = 0;
-            this.holder = ((CBListViewItem) this.listContainer.getAdapter().getItem(this.pos)).getHolder();
+            this.holder = (CBViewHolder) view.getTag();
             this.modeHelper.setCurrentPosition(this.pos);
         }
     }
@@ -81,9 +83,9 @@ public class CBSwipeType extends CBTouchType {
         if (!this.modeHelper.isSwipeActive()) {
             float offset = 0;
 
-            Log.e("test", fromX  + ", " + -holder.buttonContainer.getWidth() / 2);
-            if (fromX > holder.buttonContainer.getWidth() / 2) {
-                doAnimation(-fromX, -holder.buttonContainer.getWidth());
+            Log.e("test", fromX  + ", " + -holder.getButtonContainer().getWidth() / 2);
+            if (fromX > holder.getButtonContainer().getWidth() / 2) {
+                doAnimation(-fromX, -holder.getButtonContainer().getWidth());
                 this.modeHelper.setSwipeActive(true);
             } else {
                 offset = start.getX() - end.getX();

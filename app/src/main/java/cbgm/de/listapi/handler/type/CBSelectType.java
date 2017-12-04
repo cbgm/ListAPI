@@ -3,14 +3,15 @@ package cbgm.de.listapi.handler.type;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
-import android.widget.ListView;
+import android.view.View;
 
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.basic.CBListViewItem;
 import cbgm.de.listapi.basic.CBViewHolder;
+import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 /**
@@ -25,7 +26,7 @@ public class CBSelectType extends CBTouchType {
     //the view holder the list element relies on
     private CBViewHolder holder;
 
-    public CBSelectType(List sequenceList, CBAdapter baseAdapter, ListView listContainer, ICBActionNotifier actionNotifier, Context context) {
+    public CBSelectType(List<CBListItem> sequenceList, CBAdapter baseAdapter, RecyclerView listContainer, ICBActionNotifier actionNotifier, Context context) {
         super(sequenceList, baseAdapter, listContainer, actionNotifier, context);
     }
 
@@ -36,22 +37,23 @@ public class CBSelectType extends CBTouchType {
 
     @Override
     public void onInitialDown(MotionEvent e) {
-        this.pos = this.listContainer.pointToPosition((int) e.getX(), (int) e.getY());
+        View view = this.listContainer.findChildViewUnder((int) e.getX(), (int) e.getY());
+        this.pos = this.listContainer.getChildAdapterPosition(view);
 
         if(this.pos == -1)
             super.onInitialDown(e);
 
-        this.holder = ((CBListViewItem)listContainer.getAdapter().getItem(this.pos)).getHolder();
+        this.holder = (CBViewHolder) view.getTag();
 
     }
 
     @Override
     public void onClick(MotionEvent e) {
         //highlight item when selected
-        if (((ColorDrawable)this.holder.item.getBackground()).getColor() == Color.WHITE) {
-            this.holder.item.setBackgroundColor(Color.LTGRAY);
+        if (((ColorDrawable)this.holder.getFrontItem().getBackground()).getColor() == Color.WHITE) {
+            this.holder.getFrontItem().setBackgroundColor(Color.LTGRAY);
         } else {
-            this.holder.item.setBackgroundColor(Color.WHITE);
+            this.holder.getFrontItem().setBackgroundColor(Color.WHITE);
         }
         this.actionNotifier.singleClickAction(this.pos);
 

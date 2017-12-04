@@ -8,7 +8,8 @@ import android.support.annotation.IdRes;
  */
 
 @SuppressWarnings("WeakerAccess")
-public final class CBLayoutID {
+public final class
+CBLayoutID {
 
     @IdRes
     public static final int ITEM_FOREGROUND_ID = 0;

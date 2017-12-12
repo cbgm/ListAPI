@@ -1,6 +1,6 @@
 # ListAPI
 
-An API for the easy usage of an **Android** configureable ListView with the features of a **sort mechanism** and adding fast **custom buttons with slide function**.
+An API for the easy usage of an **Android** configureable RecyclerView with the features of a **sort mechanism** and adding fast **custom buttons with slide function**.
 It also supports multiple list items!
 
 ![](https://cdn.pbrd.co/images/1kdzBq37m.png)
@@ -23,93 +23,86 @@ It also supports multiple list items!
   
 ##### When defining the holder (containing the neccessary elements) extend from CBViewHolder 
 
-         public class MyHolder extends CBViewHolder {
-            public TextView name;
-        }
-  -------------   
-  
-#####  When defining the item extend from CBListViewItem
-  
-        public class MyListViewItem extends CBListViewItem<MyHolder, String> {
+        public class MyHolder extends CBViewHolder<BaseItem> {
+                public TextView name;
 
+                public MyHolder(View itemView, Context context, ViewGroup parent, int itemRessource) {
+                        super(itemView, context, parent, itemRessource, true, true);
+                }
 
-        public MyListViewItem(String item, MyHolder holder, int itemResource) {
-            super(item, holder, itemResource); 
-    
-###### Adding built in delete and edit button (also one custom)
+##### Init the view elements
+                @Override
+                public void initPersonalView(View itemView, Context context) {
+                        this.name = (TextView) itemView.findViewById(R.id.txt_dynamic2);
+                }
+##### Init custom buttons
 
-            this.addDelete = true;
-            this.addEdit = true;
-            this.customButtons.add(new MyButton(220, R.color.yellow, -1));
-        }
+                @Override
+                protected void initCustomButtons() {
+                        this.customButtons.add(new MyButton(CustomLayoutID.CUSTOMBUTTON_ID, R.color.yellow, -1));
+                }
 
- 
-###### Setup the functionality
+##### Setup view funtionality
+                @Override
+                protected void setUpPersonalView(BaseItem listObject, final int position, ICBActionNotifier<BaseItem> actionNotifier, Context context) {
+                        final FirstItem temp = (FirstItem) listObject;
+                        this.name.setText(temp.getTest());
+                        this.name.setEnabled(true);
+                        this.name.setTextColor(Color.GREEN);
 
-        public MyViewHolder setUpView(final int position, View convertView, final ViewGroup parent, final CBListMode mode, final ICBActionNotifier listMenuListener, final int highlightPos, final LayoutInflater inflater, final CBSwipeListener swipeListener, Context context) {
-
-        MyViewHolder test = (MyViewHolder)holder;
-        test.name.setText(item);
-        test.name.setEnabled(true);
-        test.name.setTextColor(Color.GREEN);
-        return test
-        }
-
-###### Init the the layout to the holder
-
-        public MyHolder initView(View itemView, final Context context) {
-            MyHolder test = (MyHolder)holder;
-            test.name = (TextView) itemView.findViewById(R.id.txt_dynamic2);
-
-            return test;
-        }
+                        this.buttonContainer.findViewById(CustomLayoutID.CUSTOMBUTTON_ID).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                        if (CBModeHelper.getInstance().isItemTouchCurrentItem(position))
+                                                myMenuListener.test(temp);
+                                }
+                        });
+                }
         
 2. Define the Adapter which connects the list and extend from CBAdapter
         
-        public class MyAdapter extends CBAdapter<ViewItem> {
-            public MyAdapter(Context context, List<ViewItem> data, CBListMode mode) {
-                super(context, data, mode);
-            }
-        }
+                public class MyAdapter extends CBAdapter<MyHolder, BaseItem> {
 
-3. Define the Activity which uses the list and extend from CBActivity
+                        private MyMenuListener myMenuListener;
 
-        public class MyFragment extends Fragment implements ICBActionDelegate, MyMenuListener {
-            List<ViewItem> test;
-            CBListView listContainer;
-            MyAdapter adapter;
-            Boolean isSortMode = false;
-            private static final int MENU_ITEM_ITEM1 = 1;
-            @Override
-            public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                     Bundle savedInstanceState) {
+                        public MyAdapter(Context context) {
+                                super(context);
+                        }
 
-                View rootView = inflater.inflate(R.layout.fragment, container, false);
-                this.listContainer = (CBListView) rootView.findViewById(R.id.list_container);
-                this.listContainer.setDelegateListener(this);
-                this.adapter = new MyAdapter(getContext(), loadData(), CBListMode.SWIPE);
-                setHasOptionsMenu(true);
-                this.listContainer.init(CBListMode.SWIPE, loadData(), adapter);
-                return rootView;
 
-            }
+                        @Override
+                        public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                                return new MyViewHolder(CBBaseView.getView(context), context, parent, R.layout.backitem_standard);
+                        }
 
-            public List loadData() {
-                this.test = new ArrayList<>();
-                int type = 1;
-                test = new ArrayList<>();
-                for (int i = 0; i < 20; i++) {
-
-                    if (type == 1) {
-                        String item = "item 11111111111" + i;
-                    
-###### Add list elements (needs the data, the holder and the layout)
-
-                    MyListViewItem li = new MyListViewItem(item, new MyViewHolder(), R.layout.backitem_standard, this, -1);
-                    test.add(li);
+              
                 }
-                return test;
-            }
+3. Define the Fragment which uses the list
+
+                public class MyFragment extends Fragment implements ICBActionDelegate<BaseItem> {
+                        private List<BaseItem> viewItems;
+                        private CBListView<MyHolder, BaseItem, MyAdapter> listContainer;
+                        private MyAdapter adapter;
+
+                        @Override
+                        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+                                View rootView = inflater.inflate(R.layout.fragment, container, false);
+                                CBModeHelper.getInstance().setListMode(CBListMode.SWIPE);
+                                this.listContainer = find(rootView, R.id.list_container);
+                                this.listContainer.setHasFixedSize(true);
+                                LinearLayoutManager llm = new LinearLayoutManager(getContext());
+                                this.listContainer.setLayoutManager(llm);
+                                this.listContainer.setDelegateListener(this);
+                                this.adapter = new MyAdapter(getContext());
+                                this.adapter.setCustomMenuListener(this);
+                                loadData();
+                                setHasOptionsMenu(true);
+##### Add the listts data
+                                this.listContainer.init(this.viewItems, this.adapter);
+                                return rootView;
+                        }
+                        ......
 
 ###### When the foreground was clicked do at least something
 
@@ -125,9 +118,11 @@ It also supports multiple list items!
 
             }
         }     
-4. Switch the list mode
+4. Switch from swipe / select to sort list mode
 
-        this.listContainer.init(CBListMode.SORT, loadData(), adapter);
+         CBModeHelper.getInstance().setListMode(CBListMode.SORT);
+         loadData();
+         this.listContainer.init(this.viewItems, this.adapter);
 
         
 5. 

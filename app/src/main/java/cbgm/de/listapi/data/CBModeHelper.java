@@ -5,6 +5,7 @@ package cbgm.de.listapi.data;
  * @author Christian Bergmann
  */
 
+@SuppressWarnings({"SameParameterValue", "unused"})
 public class CBModeHelper {
     //tells if an item is in active swiping
     private boolean isSwipeActive = false;
@@ -93,9 +94,6 @@ public class CBModeHelper {
      */
     public boolean isItemTouchCurrentItem(final int position) {
 
-        if (modeHelper.isSwipeActive() && modeHelper.getCurrentPosition() == position) {
-            return true;
-        }
-        return false;
+        return modeHelper.isSwipeActive() && modeHelper.getCurrentPosition() == position;
     }
 }

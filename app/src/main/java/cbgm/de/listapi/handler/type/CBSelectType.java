@@ -11,7 +11,6 @@ import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
 import cbgm.de.listapi.basic.CBViewHolder;
-import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 /**
@@ -19,14 +18,14 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  * @author Christian Bergmann
  */
 
-public class CBSelectType extends CBTouchType {
+public class CBSelectType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I> {
 
     //the current position which describes the item
     private int pos;
     //the view holder the list element relies on
     private CBViewHolder holder;
 
-    public CBSelectType(List<CBListItem> sequenceList, CBAdapter baseAdapter, RecyclerView listContainer, ICBActionNotifier actionNotifier, Context context) {
+    CBSelectType(List<I> sequenceList, CBAdapter<H, I> baseAdapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
         super(sequenceList, baseAdapter, listContainer, actionNotifier, context);
     }
 
@@ -42,7 +41,6 @@ public class CBSelectType extends CBTouchType {
 
         if(this.pos == -1)
             super.onInitialDown(e);
-
         this.holder = (CBViewHolder) view.getTag();
 
     }

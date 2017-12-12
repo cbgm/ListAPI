@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.data.CBListMode;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.handler.CBTouchHandler;
@@ -21,13 +20,14 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  * @author Christian Bergmann
  */
 
-public class CBListView extends RecyclerView implements ICBActionNotifier {
+@SuppressWarnings("unused")
+public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>> extends RecyclerView implements ICBActionNotifier<I> {
     /*Listener to forward list item click events*/
-    protected ICBActionDelegate deletegateListener;
+    protected ICBActionDelegate<I> deletegateListener;
     /*The list adapter*/
-    protected CBAdapter adapter;
+    protected A adapter;
     //touch handler for switching the possible touch types (swipe, sort, select)
-    protected CBTouchHandler touchHandler;
+    protected CBTouchHandler<A, I, H> touchHandler;
 
     protected CBModeHelper modeHelper = CBModeHelper.getInstance();
     //array mirrors the positions of the selected items
@@ -54,32 +54,32 @@ public class CBListView extends RecyclerView implements ICBActionNotifier {
         return super.dispatchTouchEvent(ev);
     }
 
-     public void setAdapter(CBAdapter adapter) {
+    public void setAdapter(A adapter) {
         this.adapter = adapter;
         this.adapter.setActionListener(this);
         super.setAdapter(this.adapter);
     }
 
-    public CBAdapter getAdapter() {
+    public CBAdapter<H, I> getAdapter() {
         return this.adapter;
     }
 
     @Override
-    public void deleteAction(final Object o) {
+    public void deleteAction(final I o) {
         Log.d("LIST_API", "button delete clicked");
         this.touchHandler.informButtonClick();
         deletegateListener.delegateDeleteAction(o);
     }
 
     @Override
-    public void editAction(final Object o) {
+    public void editAction(final I o) {
         Log.d("LIST_API", "button edit clicked");
         this.touchHandler.informButtonClick();
         deletegateListener.delegateEditAction(o);
     }
 
     @Override
-    public void sortAction(List list) {
+    public void sortAction(List<I> list) {
         Log.d("LIST_API", "item sorted");
         deletegateListener.delegateSortAction(list);
     }
@@ -166,7 +166,7 @@ public class CBListView extends RecyclerView implements ICBActionNotifier {
      * @param data the list items
      * @param adapter the adapter
      */
-    public void init(final List<CBListItem> data, CBAdapter adapter) {
+    public void init(final List<I> data, A adapter) {
         this.adapter = adapter;
         this.touchHandler = new CBTouchHandler<>(data, this.adapter, this, this, getContext());
         this.setOnTouchListener(touchHandler);
@@ -178,7 +178,7 @@ public class CBListView extends RecyclerView implements ICBActionNotifier {
      * Method to set the delegate listener for forwarding list item click events
      * @param delegateListener the listener
      */
-    public void setDelegateListener(final ICBActionDelegate delegateListener) {
+    public void setDelegateListener(final ICBActionDelegate<I> delegateListener) {
         this.deletegateListener = delegateListener;
     }
 

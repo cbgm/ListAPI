@@ -8,10 +8,10 @@ import java.util.List;
  * @author Christian Bergmann
  */
 
-public interface ICBActionNotifier {
-    void deleteAction(final Object o);
-    void editAction(final Object o);
-    void sortAction(final List list);
+public interface ICBActionNotifier<I> {
+    void deleteAction(final I o);
+    void editAction(final I o);
+    void sortAction(final List<I> list);
     void swipeAction();
     void singleClickAction(final int position);
     void longClickAction(final int position);

@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.data.CBListItem;
+import cbgm.de.listapi.basic.CBViewHolder;
 import cbgm.de.listapi.data.CBListMode;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.listener.ICBActionNotifier;
@@ -26,16 +26,16 @@ public class CBTouchFactory {
      * @param actionNotifier the listener to pass the touch events
      * @return the CBTouchType
      */
-    public static CBTouchType getTouchType(final List<CBListItem> sequenceList, final CBAdapter baseAdapter, final RecyclerView listContainer, final ICBActionNotifier actionNotifier, Context context){
+    public static <H extends CBViewHolder<I>, I> CBTouchType getTouchType(final List<I> sequenceList, final CBAdapter<H, I> baseAdapter, final RecyclerView listContainer, final ICBActionNotifier<I> actionNotifier, Context context){
         CBListMode mode = CBModeHelper.getInstance().getListMode();
 
         switch(mode) {
             case SWIPE:
-                return new CBSwipeType(sequenceList, baseAdapter, listContainer, actionNotifier, context);
+                return new CBSwipeType<>(sequenceList, baseAdapter, listContainer, actionNotifier, context);
             case SELECT:
-                return new CBSelectType(sequenceList, baseAdapter, listContainer, actionNotifier, context);
+                return new CBSelectType<>(sequenceList, baseAdapter, listContainer, actionNotifier, context);
             case SORT:
-                return new CBSortType(sequenceList, baseAdapter, listContainer, actionNotifier, context);
+                return new CBSortType<>(sequenceList, baseAdapter, listContainer, actionNotifier, context);
             default:
                 return null;
         }

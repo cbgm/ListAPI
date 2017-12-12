@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 
@@ -14,13 +13,13 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  * The adapter for the list
  * @author Christian Bergmann
  */
-public abstract class CBAdapter<H extends CBViewHolder<CBListItem>> extends RecyclerView.Adapter<H> {
+public abstract class CBAdapter<H extends CBViewHolder<I>, I> extends RecyclerView.Adapter<H> {
     /*The application context*/
     protected Context context;
     /*Listener for list item click events*/
-    protected ICBActionNotifier actionNotifier;
+    protected ICBActionNotifier<I> actionNotifier;
     /*The list items*/
-    protected List<CBListItem> data;
+    protected List<I> data;
 
     /**
      * Constructor
@@ -35,7 +34,7 @@ public abstract class CBAdapter<H extends CBViewHolder<CBListItem>> extends Recy
         return this.data.size();
     }
 
-    protected CBListItem getItem(final int position) {
+    protected I getItem(final int position) {
         return this.data.get(position);
     }
 
@@ -59,14 +58,14 @@ public abstract class CBAdapter<H extends CBViewHolder<CBListItem>> extends Recy
         return position;
     }
 
-    public void setActionListener(final ICBActionNotifier actionNotifier) {
+    public void setActionListener(final ICBActionNotifier<I> actionNotifier) {
         this.actionNotifier = actionNotifier;
     }
 
     /**
      * Method to init the adapter
      */
-    public void init(final List<CBListItem> data) {
+    public void init(final List<I> data) {
         this.data = data;
         notifyDataSetChanged();
     }
@@ -75,7 +74,7 @@ public abstract class CBAdapter<H extends CBViewHolder<CBListItem>> extends Recy
      * Method to the adapters data.
      * @return the list
      */
-    public List<CBListItem> getData(){
+    public List<I> getData(){
         return this.data;
     }
 }

@@ -8,10 +8,10 @@ import java.util.List;
  * @author Christian Bergmann
  */
 
-public interface ICBActionDelegate {
-    void delegateDeleteAction(final Object o);
-    void delegateEditAction(final Object o);
-    void delegateSortAction(final List list);
+public interface ICBActionDelegate<I> {
+    void delegateDeleteAction(final I o);
+    void delegateEditAction(final I o);
+    void delegateSortAction(final List<I> list);
     void delegateSingleClickAction(final int position);
     void delegateLongClickAction(final int position);
     void delegateSwipeAction();

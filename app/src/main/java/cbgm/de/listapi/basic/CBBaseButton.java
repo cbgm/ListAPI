@@ -16,6 +16,7 @@ import cbgm.de.listapi.R;
  * Extend from if custom button is desired.
  * @author Christian Bergmann
  */
+@SuppressWarnings("unused")
 public class CBBaseButton {
     /* The buttons id */
     private int btnId = -1;

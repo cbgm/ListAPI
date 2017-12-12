@@ -13,7 +13,6 @@ import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
 import cbgm.de.listapi.basic.CBViewHolder;
-import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 /**
@@ -21,7 +20,7 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  * @author Christian Bergmann
  */
 
-public class CBSortType extends CBTouchType {
+public class CBSortType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I> {
     //tells if there is a long press on a list item
     private boolean isLongPress = false;
     //the current position which describes the item
@@ -31,7 +30,7 @@ public class CBSortType extends CBTouchType {
     //the y coordinate where we move from
     private int fromY;
 
-    public CBSortType(List<CBListItem> sequenceList, CBAdapter baseAdapter, RecyclerView listContainer, ICBActionNotifier actionNotifier, Context context) {
+    CBSortType(List<I> sequenceList, CBAdapter<H, I> baseAdapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
         super(sequenceList, baseAdapter, listContainer, actionNotifier, context);
     }
 
@@ -103,7 +102,7 @@ public class CBSortType extends CBTouchType {
                 this.listContainer.smoothScrollToPosition(scrollPos);
 
             } catch (Exception ex){
-
+                Log.e("LIST_API" ,"scroll error");
             }
         }
     }

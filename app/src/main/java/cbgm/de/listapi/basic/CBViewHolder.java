@@ -1,6 +1,5 @@
 package cbgm.de.listapi.basic;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
@@ -16,12 +15,12 @@ import java.util.List;
 
 import cbgm.de.listapi.R;
 import cbgm.de.listapi.data.CBLayoutID;
-import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.data.CBListMode;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
-public abstract class CBViewHolder<I extends CBListItem> extends RecyclerView.ViewHolder {
+@SuppressWarnings("unused")
+public abstract class CBViewHolder<I> extends RecyclerView.ViewHolder {
     /* The background item which shows up on swipe */
     protected LinearLayout backItem;
     /* The list item menu container which is within the background item */
@@ -32,7 +31,7 @@ public abstract class CBViewHolder<I extends CBListItem> extends RecyclerView.Vi
     protected LinearLayout delete;
     /* The basic edit button */
     protected LinearLayout edit;
-    //tells if the edeit button should be added
+    //tells if the edit button should be added
     private boolean addEdit;
     //tells if the delete button should be added
     private boolean addDelete;
@@ -44,8 +43,7 @@ public abstract class CBViewHolder<I extends CBListItem> extends RecyclerView.Vi
         initView(itemView, context, parent, itemResource, addEdit, addDelete);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    public void addFunctionalityOnView(final I listObject, final int position, final ICBActionNotifier actionNotifier, final Context context) {
+    public void addFunctionalityOnView(final I listObject, final int position, final ICBActionNotifier<I> actionNotifier, final Context context) {
         CBListMode mode = CBModeHelper.getInstance().getListMode();
 
         switch (mode) {
@@ -59,7 +57,7 @@ public abstract class CBViewHolder<I extends CBListItem> extends RecyclerView.Vi
                         public boolean onTouch(View v, MotionEvent event) {
 
                             if (CBModeHelper.getInstance().isItemTouchCurrentItem(position)) {
-                                actionNotifier.editAction(position);
+                                actionNotifier.editAction(listObject);
                                 return true;
                             }
                             return false;
@@ -116,23 +114,23 @@ public abstract class CBViewHolder<I extends CBListItem> extends RecyclerView.Vi
         this.customButtons = new ArrayList<>();
         initCustomButtons();
 
-        this.frontItem = (GridLayout)itemView.findViewById(CBLayoutID.ITEM_FOREGROUND_ID);
-        this.buttonContainer = (LinearLayout) itemView.findViewById(CBLayoutID.BUTTON_CONTAINER_ID);
+        this.frontItem = itemView.findViewById(CBLayoutID.ITEM_FOREGROUND_ID);
+        this.buttonContainer = itemView.findViewById(CBLayoutID.BUTTON_CONTAINER_ID);
 
         if (addEdit) {
             this.buttonContainer.addView(new CBBaseButton().getButton(CBLayoutID.EDIT_BUTTON_ID, context, R.color.cb_edit_background_color, R.mipmap.edit_icon));
-            this.edit = (LinearLayout) itemView.findViewById(CBLayoutID.EDIT_BUTTON_ID);
+            this.edit = itemView.findViewById(CBLayoutID.EDIT_BUTTON_ID);
         }
 
         if (addDelete) {
             this.buttonContainer.addView(new CBBaseButton().getButton(CBLayoutID.DELETE_BUTTON_ID, context, R.color.cb_delete_background_color, R.mipmap.trash_icon));
-            this.delete = (LinearLayout) itemView.findViewById(CBLayoutID.DELETE_BUTTON_ID);
+            this.delete = itemView.findViewById(CBLayoutID.DELETE_BUTTON_ID);
         }
 
         for (CBBaseButton customButton : this.customButtons) {
             this.buttonContainer.addView(customButton.getCustomButton(context));
         }
-        this.backItem = (LinearLayout) itemView.findViewById(CBLayoutID.ITEM_BACKGROUND_ID);
+        this.backItem = itemView.findViewById(CBLayoutID.ITEM_BACKGROUND_ID);
         LayoutInflater inflater = LayoutInflater.from(context);
         View personalView = inflater.inflate(itemResource, parent, false);
         this.frontItem.addView(personalView);
@@ -148,7 +146,7 @@ public abstract class CBViewHolder<I extends CBListItem> extends RecyclerView.Vi
      * @param actionNotifier the listener for clicks
      * @param context the context
      */
-    protected abstract void setUpPersonalView(final I listObject, final int position, final ICBActionNotifier actionNotifier, final Context context);
+    protected abstract void setUpPersonalView(final I listObject, final int position, final ICBActionNotifier<I> actionNotifier, final Context context);
 
     /**
      * Method for initializing the view.

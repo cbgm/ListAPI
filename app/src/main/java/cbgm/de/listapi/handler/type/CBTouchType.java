@@ -10,7 +10,7 @@ import android.view.View;
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.data.CBListItem;
+import cbgm.de.listapi.basic.CBViewHolder;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
@@ -19,22 +19,23 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  * @author Christian Bergmann
  */
 
-public abstract class CBTouchType implements View.OnTouchListener {
+@SuppressWarnings("unused")
+public abstract class CBTouchType<H extends CBViewHolder<I>, I> implements View.OnTouchListener {
     //the list item data
-    protected List<CBListItem> data;
+    protected List<I> data;
     //the recycler adapter
-    protected CBAdapter adapter;
+    protected CBAdapter<H, I> adapter;
     //the recycler view
     protected RecyclerView listContainer;
     //the notifier when a list action is triggered
-    protected ICBActionNotifier actionNotifier;
+    protected ICBActionNotifier<I> actionNotifier;
     //handler for a long press event (long click of gesture detector is not always usable)
     final Handler longPressHandler;
     final CBModeHelper modeHelper;
     //detector for different gestures
     private GestureDetector gestureDetector;
 
-    public CBTouchType(final List<CBListItem> data, CBAdapter baseAdapter, RecyclerView listContainer, ICBActionNotifier actionNotifier, Context context) {
+    public CBTouchType(final List<I> data, CBAdapter<H, I> baseAdapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
         this.data = data;
         this.adapter = baseAdapter;
         this.listContainer = listContainer;

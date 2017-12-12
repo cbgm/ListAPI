@@ -9,19 +9,19 @@ import android.view.View;
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.data.CBListItem;
+import cbgm.de.listapi.basic.CBViewHolder;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.handler.type.CBTouchFactory;
 import cbgm.de.listapi.handler.type.CBTouchType;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 
-public class CBTouchHandler<A extends CBAdapter> implements View.OnTouchListener{
+public class CBTouchHandler<A extends CBAdapter<H, I>, I, H extends CBViewHolder<I>> implements View.OnTouchListener{
 
     //the list item data
-    private List<CBListItem> data;
+    private List<I> data;
     //the notifier when a list action is triggered
-    private ICBActionNotifier actionNotifier;
+    private ICBActionNotifier<I> actionNotifier;
     //the recycler view for the items
     private RecyclerView listContainer;
     //the recycler adapter
@@ -33,7 +33,7 @@ public class CBTouchHandler<A extends CBAdapter> implements View.OnTouchListener
     //the application context
     private Context context;
 
-    public CBTouchHandler(final List<CBListItem> data, A adapter, RecyclerView listContainer, ICBActionNotifier actionNotifier, Context context) {
+    public CBTouchHandler(final List<I> data, A adapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
         this.data = data;
         this.adapter = adapter;
         this.listContainer = listContainer;
@@ -61,7 +61,7 @@ public class CBTouchHandler<A extends CBAdapter> implements View.OnTouchListener
     }
 
     /**
-     * Method should be called when there was a button click on the list item menu.
+     * Method should be called when there was a button click on the list item menu (depending on swipe).
      */
     public void informButtonClick() {
         cleanTouch();

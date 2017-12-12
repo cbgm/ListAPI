@@ -13,14 +13,15 @@ import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
 import cbgm.de.listapi.basic.CBViewHolder;
-import cbgm.de.listapi.data.CBListItem;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 /**
- * Created by SA_Admin on 21.11.2017.
+ * Class to handle the touch type swipe.
+ * @author Christian Bergmann
  */
 
-public class CBSwipeType extends CBTouchType {
+
+public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I> {
     //the current position which describes the item
     private int pos;
     //the old x coordinate of the move
@@ -28,7 +29,7 @@ public class CBSwipeType extends CBTouchType {
     //the view holder the list element relies on
     private CBViewHolder holder;
 
-    public CBSwipeType(List<CBListItem> data, CBAdapter baseAdapter, RecyclerView listContainer, ICBActionNotifier actionNotifier, Context context) {
+    CBSwipeType(List<I> data, CBAdapter<H, I> baseAdapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
         super(data, baseAdapter, listContainer, actionNotifier, context);
     }
 

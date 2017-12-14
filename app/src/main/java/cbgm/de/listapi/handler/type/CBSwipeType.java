@@ -54,15 +54,16 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
     public void onLongClick(MotionEvent e) {
         Log.d("LIST API", "Item long clicked");
 
-       if (!this.modeHelper.isSwipeActive()) {
-           if (((ColorDrawable)holder.getFrontItem().getBackground()).getColor() == Color.WHITE) {
-               holder.getFrontItem().setBackgroundColor(this.modeHelper.getSelectColor());
-           } else {
-               holder.getFrontItem().setBackgroundColor(Color.WHITE);
-           }
-           //cleanTouch();
-           actionNotifier.longClickAction(pos);
-       }
+        if (!this.modeHelper.isSwipeActive()) {
+            int color = ((ColorDrawable)holder.getFrontItem().getBackground()).getColor();
+            if (color == Color.WHITE || color == this.modeHelper.getHightlightColor()) {
+                holder.getFrontItem().setBackgroundColor(this.modeHelper.getSelectColor());
+            } else {
+                holder.getFrontItem().setBackgroundColor(Color.WHITE);
+            }
+            //cleanTouch();
+            actionNotifier.longClickAction(pos);
+        }
     }
 
     @Override
@@ -73,6 +74,7 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
         if (!this.modeHelper.isSwipeActive() && this.pos != -1) {
             this.fromX = 0;
             this.holder = (CBViewHolder) view.getTag();
+            this.holder.getFrontItem().setBackgroundColor(this.modeHelper.getHightlightColor());
             this.modeHelper.setCurrentPosition(this.pos);
         }
     }
@@ -80,7 +82,6 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
 
     @Override
     public void onSwipeLeft(MotionEvent start, MotionEvent end) {
-
         if (!this.modeHelper.isSwipeActive()) {
             float offset = 0;
 
@@ -105,16 +106,16 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
 
     @Override
     public void onUp(MotionEvent event) {
+        this.holder.getFrontItem().setBackgroundColor(Color.WHITE);
         if (!this.modeHelper.isSwipeActive() && !this.modeHelper.isButtonClicked()) {
             cleanTouch();
         }
-       // view.setBackgroundColor(Color.parseColor("#f9f9f9"));
+        // view.setBackgroundColor(Color.parseColor("#f9f9f9"));
 
     }
 
     @Override
     public void onClick(MotionEvent e) {
-        this.holder.getFrontItem().setBackgroundColor(this.modeHelper.getHightlightColor());
 
         if (!this.modeHelper.isSwipeActive())
             this.actionNotifier.singleClickAction(this.pos);

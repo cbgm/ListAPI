@@ -53,6 +53,10 @@ public abstract class CBTouchType<H extends CBViewHolder<I>, I> implements View.
      */
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+
+        if (data.size() == 0)
+            return false;
+
         if(motionEvent.getAction() == MotionEvent.ACTION_UP){
             onUp(motionEvent);
         } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {

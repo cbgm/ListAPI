@@ -32,6 +32,8 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
     protected CBModeHelper modeHelper = CBModeHelper.getInstance();
     //array mirrors the positions of the selected items
     protected ArrayList<Boolean> selectedItems;
+    //tells if TouchHandler should be enabled for (swipe ,select, sort)
+    protected  boolean isTouchable = true;
 
     public CBListView(Context context) {
         super(context);
@@ -168,8 +170,13 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
      */
     public void init(final List<I> data, A adapter) {
         this.adapter = adapter;
-        this.touchHandler = new CBTouchHandler<>(data, this.adapter, this, this, getContext());
-        this.setOnTouchListener(touchHandler);
+
+        if (isTouchable) {
+            this.touchHandler = new CBTouchHandler<>(data, this.adapter, this, this, getContext());
+            this.setOnTouchListener(touchHandler);
+        } else {
+            this.setOnTouchListener(null);
+        }
         this.adapter.init(data);
         setAdapter(this.adapter);
     }
@@ -193,5 +200,14 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
     @Override
     public boolean performClick() {
         return super.performClick();
+    }
+
+    public boolean isTouchable() {
+        return isTouchable;
+    }
+
+    @SuppressWarnings("unused")
+    public void setTouchable(boolean touchable) {
+        isTouchable = touchable;
     }
 }

@@ -1,5 +1,7 @@
 package cbgm.de.listapi.data;
 
+import android.graphics.Color;
+
 /**
  * Singleton for vars that need global availability concerning the mode switching.
  * @author Christian Bergmann
@@ -20,9 +22,9 @@ public class CBModeHelper {
     //tells if a button of the list item (delete, edit) was clicked
     private boolean buttonClicked = false;
     //the color for highlighting a touch
-    private int hightlightColor;
+    private int highlightColor = Color.WHITE;
     //the color for highlighting a selection
-    private int selectColor;
+    private int selectColor = Color.LTGRAY;
 
     private static CBModeHelper modeHelper;
 
@@ -101,12 +103,12 @@ public class CBModeHelper {
         return modeHelper.isSwipeActive() && modeHelper.getCurrentPosition() == position;
     }
 
-    public int getHightlightColor() {
-        return hightlightColor;
+    public int getHighlightColor() {
+        return highlightColor;
     }
 
-    public void setHightlightColor(int hightlightColor) {
-        this.hightlightColor = hightlightColor;
+    public void setHightightColor(int highlightColor) {
+        this.highlightColor = highlightColor;
     }
 
     public int getSelectColor() {

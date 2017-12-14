@@ -42,7 +42,7 @@ public class CBSortType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I> 
             modeHelper.setSelectedPosition(pos);
 
             if (((ColorDrawable)holder.getFrontItem().getBackground()).getColor() == Color.WHITE) {
-                holder.getFrontItem().setBackgroundColor(Color.LTGRAY);
+                holder.getFrontItem().setBackgroundColor(modeHelper.getSelectColor());
             } else {
                 holder.getFrontItem().setBackgroundColor(Color.WHITE);
             }

@@ -19,6 +19,10 @@ public class CBModeHelper {
     private int currentPosition = -1;
     //tells if a button of the list item (delete, edit) was clicked
     private boolean buttonClicked = false;
+    //the color for highlighting a touch
+    private int hightlightColor;
+    //the color for highlighting a selection
+    private int selectColor;
 
     private static CBModeHelper modeHelper;
 
@@ -95,5 +99,21 @@ public class CBModeHelper {
     public boolean isItemTouchCurrentItem(final int position) {
 
         return modeHelper.isSwipeActive() && modeHelper.getCurrentPosition() == position;
+    }
+
+    public int getHightlightColor() {
+        return hightlightColor;
+    }
+
+    public void setHightlightColor(int hightlightColor) {
+        this.hightlightColor = hightlightColor;
+    }
+
+    public int getSelectColor() {
+        return selectColor;
+    }
+
+    public void setSelectColor(int selectColor) {
+        this.selectColor = selectColor;
     }
 }

@@ -1,5 +1,6 @@
 package cbgm.de.listapi.basic;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
@@ -43,8 +44,10 @@ public abstract class CBViewHolder<I> extends RecyclerView.ViewHolder {
         initView(itemView, context, parent, itemResource, addEdit, addDelete);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void addFunctionalityOnView(final I listObject, final int position, final ICBActionNotifier<I> actionNotifier, final Context context) {
-        CBListMode mode = CBModeHelper.getInstance().getListMode();
+        CBModeHelper modeHelper = CBModeHelper.getInstance();
+        CBListMode mode = modeHelper.getListMode();
 
         switch (mode) {
             case SWIPE:
@@ -86,7 +89,7 @@ public abstract class CBViewHolder<I> extends RecyclerView.ViewHolder {
             case SORT:
                 //highlight item with different color if dragged
                 if (CBModeHelper.getInstance().getSelectedPosition() == position) {
-                    this.frontItem.setBackgroundColor(Color.LTGRAY);
+                    this.frontItem.setBackgroundColor(modeHelper.getSelectColor());
                 } else {
                     this.frontItem.setBackgroundColor(Color.WHITE);
                 }
@@ -114,23 +117,23 @@ public abstract class CBViewHolder<I> extends RecyclerView.ViewHolder {
         this.customButtons = new ArrayList<>();
         initCustomButtons();
 
-        this.frontItem = itemView.findViewById(CBLayoutID.ITEM_FOREGROUND_ID);
-        this.buttonContainer = itemView.findViewById(CBLayoutID.BUTTON_CONTAINER_ID);
+        this.frontItem = (GridLayout) itemView.findViewById(CBLayoutID.ITEM_FOREGROUND_ID);
+        this.buttonContainer = (LinearLayout) itemView.findViewById(CBLayoutID.BUTTON_CONTAINER_ID);
 
         if (addEdit) {
             this.buttonContainer.addView(new CBBaseButton().getButton(CBLayoutID.EDIT_BUTTON_ID, context, R.color.cb_edit_background_color, R.mipmap.edit_icon));
-            this.edit = itemView.findViewById(CBLayoutID.EDIT_BUTTON_ID);
+            this.edit = (LinearLayout) itemView.findViewById(CBLayoutID.EDIT_BUTTON_ID);
         }
 
         if (addDelete) {
             this.buttonContainer.addView(new CBBaseButton().getButton(CBLayoutID.DELETE_BUTTON_ID, context, R.color.cb_delete_background_color, R.mipmap.trash_icon));
-            this.delete = itemView.findViewById(CBLayoutID.DELETE_BUTTON_ID);
+            this.delete = (LinearLayout) itemView.findViewById(CBLayoutID.DELETE_BUTTON_ID);
         }
 
         for (CBBaseButton customButton : this.customButtons) {
             this.buttonContainer.addView(customButton.getCustomButton(context));
         }
-        this.backItem = itemView.findViewById(CBLayoutID.ITEM_BACKGROUND_ID);
+        this.backItem = (LinearLayout) itemView.findViewById(CBLayoutID.ITEM_BACKGROUND_ID);
         LayoutInflater inflater = LayoutInflater.from(context);
         View personalView = inflater.inflate(itemResource, parent, false);
         this.frontItem.addView(personalView);

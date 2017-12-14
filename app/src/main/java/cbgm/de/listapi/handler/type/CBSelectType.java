@@ -49,7 +49,7 @@ public class CBSelectType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I
     public void onClick(MotionEvent e) {
         //highlight item when selected
         if (((ColorDrawable)this.holder.getFrontItem().getBackground()).getColor() == Color.WHITE) {
-            this.holder.getFrontItem().setBackgroundColor(Color.LTGRAY);
+            this.holder.getFrontItem().setBackgroundColor(this.modeHelper.getSelectColor());
         } else {
             this.holder.getFrontItem().setBackgroundColor(Color.WHITE);
         }

@@ -51,6 +51,9 @@ public class CBSortType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I> 
 
     @Override
     public void onInitialDown(MotionEvent motionEvent) {
+
+        if (isMotionOutside(motionEvent, null))
+            return;
         View view = this.listContainer.findChildViewUnder((int) motionEvent.getX(), (int) motionEvent.getY());
         this.pos = this.listContainer.getChildAdapterPosition(view);
 
@@ -83,6 +86,9 @@ public class CBSortType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I> 
 
     @Override
     public void onMove(MotionEvent motionEvent) {
+
+        if (isMotionOutside(motionEvent, null))
+            return;
 
         if (this.isLongPress) {
             Log.d("LIST API", "Item moving");

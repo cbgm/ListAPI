@@ -54,15 +54,29 @@ public abstract class CBTouchType<H extends CBViewHolder<I>, I> implements View.
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
 
-        if (this.data.size() == 0)
-            return false;
-
         if(motionEvent.getAction() == MotionEvent.ACTION_UP){
             onUp(motionEvent);
         } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
             onMove(motionEvent);
         }
         return this.gestureDetector.onTouchEvent(motionEvent);
+    }
+
+    /**
+     * Method to check if the gesture is outside the list.
+     * @param start the start or initial motion
+     * @param end the end motion for swiping gesture
+     * @return true if gesture is outside
+     */
+    protected boolean isMotionOutside(MotionEvent start, MotionEvent end) {
+
+        View childViewStart = listContainer.findChildViewUnder((int) start.getX(), (int) start.getY());
+
+        if (end != null) {
+            View childViewEnd = listContainer.findChildViewUnder((int) end.getX(), (int) end.getY());
+            return !(childViewStart != null && childViewEnd != null);
+        }
+        return childViewStart == null;
     }
 
     /**

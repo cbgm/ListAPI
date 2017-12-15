@@ -36,17 +36,22 @@ public class CBSelectType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I
 
     @Override
     public void onInitialDown(MotionEvent e) {
-        View view = this.listContainer.findChildViewUnder((int) e.getX(), (int) e.getY());
-        this.pos = this.listContainer.getChildAdapterPosition(view);
+
+        if (isMotionOutside(e, null))
+            return;
+        View childView = this.listContainer.findChildViewUnder((int) e.getX(), (int) e.getY());
+        this.pos = this.listContainer.getChildAdapterPosition(childView);
 
         if(this.pos == -1)
             super.onInitialDown(e);
-        this.holder = (CBViewHolder) view.getTag();
+        this.holder = (CBViewHolder) childView.getTag();
 
     }
 
     @Override
     public void onClick(MotionEvent e) {
+        if (isMotionOutside(e, null))
+            return;
         //highlight item when selected
         if (((ColorDrawable)this.holder.getFrontItem().getBackground()).getColor() == Color.WHITE) {
             this.holder.getFrontItem().setBackgroundColor(this.modeHelper.getSelectColor());

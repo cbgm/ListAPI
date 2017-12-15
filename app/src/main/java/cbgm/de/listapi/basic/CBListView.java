@@ -118,6 +118,7 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
             if (!hasSelection) {
                 this.modeHelper.setListMode(CBListMode.SWIPE);
                 this.modeHelper.setSelectedPosition(-1);
+                this.adapter.notifyDataSetChanged();
                 Log.d("LIST API", "off select");
             }
             return;
@@ -131,6 +132,7 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
         if (this.modeHelper.getListMode() != CBListMode.SELECT) {
             setSelectedItems();
             this.modeHelper.setListMode(CBListMode.SELECT);
+            this.adapter.notifyDataSetChanged();
             handleSelect(position);
         }
         deletegateListener.delegateLongClickAction(position);

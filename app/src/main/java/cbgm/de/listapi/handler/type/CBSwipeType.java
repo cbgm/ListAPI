@@ -56,7 +56,7 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
 
         if (!this.modeHelper.isSwipeActive()) {
             int color = ((ColorDrawable)holder.getFrontItem().getBackground()).getColor();
-            if (color == Color.WHITE || color == this.modeHelper.getHightlightColor()) {
+            if (color == Color.WHITE || color == this.modeHelper.getHighlightColor()) {
                 holder.getFrontItem().setBackgroundColor(this.modeHelper.getSelectColor());
             } else {
                 holder.getFrontItem().setBackgroundColor(Color.WHITE);
@@ -74,7 +74,7 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
         if (!this.modeHelper.isSwipeActive() && this.pos != -1) {
             this.fromX = 0;
             this.holder = (CBViewHolder) view.getTag();
-            this.holder.getFrontItem().setBackgroundColor(this.modeHelper.getHightlightColor());
+            this.holder.getFrontItem().setBackgroundColor(this.modeHelper.getHighlightColor());
             this.modeHelper.setCurrentPosition(this.pos);
         }
     }

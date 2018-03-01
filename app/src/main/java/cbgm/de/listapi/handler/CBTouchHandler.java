@@ -2,30 +2,29 @@ package cbgm.de.listapi.handler;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.basic.CBViewHolder;
+import cbgm.de.listapi.basic.CBListView;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.handler.type.CBTouchFactory;
 import cbgm.de.listapi.handler.type.CBTouchType;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 
-public class CBTouchHandler<A extends CBAdapter<H, I>, I, H extends CBViewHolder<I>> implements View.OnTouchListener{
+public class CBTouchHandler<I> implements View.OnTouchListener{
 
     //the list item data
     private List<I> data;
     //the notifier when a list action is triggered
     private ICBActionNotifier<I> actionNotifier;
     //the recycler view for the items
-    private RecyclerView listContainer;
+    private CBListView listContainer;
     //the recycler adapter
-    private A adapter;
+    private CBAdapter<I> adapter;
     //the current touch type (swipe, select, sort)
     private CBTouchType touchType;
 
@@ -33,7 +32,7 @@ public class CBTouchHandler<A extends CBAdapter<H, I>, I, H extends CBViewHolder
     //the application context
     private Context context;
 
-    public CBTouchHandler(final List<I> data, A adapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
+    public CBTouchHandler(final List<I> data, CBAdapter<I> adapter, CBListView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
         this.data = data;
         this.adapter = adapter;
         this.listContainer = listContainer;
@@ -50,7 +49,7 @@ public class CBTouchHandler<A extends CBAdapter<H, I>, I, H extends CBViewHolder
                 this.touchType = CBTouchFactory.getTouchType(data, adapter, listContainer, actionNotifier, context);
                 this.modeHelper.resetModeChanged();
         }
-        return touchType.onTouch(view, motionEvent);
+        return touchType != null && touchType.onTouch(view, motionEvent);
     }
 
     /**

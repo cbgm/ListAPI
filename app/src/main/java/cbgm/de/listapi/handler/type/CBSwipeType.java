@@ -1,8 +1,6 @@
 package cbgm.de.listapi.handler.type;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -12,7 +10,7 @@ import android.view.animation.TranslateAnimation;
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.basic.CBViewHolder;
+import cbgm.de.listapi.basic.CBAdapterDelegate;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
 /**
@@ -21,27 +19,29 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  */
 
 
-public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I> {
+public class CBSwipeType<I> extends CBTouchType<I> {
     //the current position which describes the item
     private int pos;
     //the old x coordinate of the move
     private float fromX = -1;
     //the view holder the list element relies on
-    private CBViewHolder holder;
+    private CBAdapterDelegate.CBViewHolder holder;
 
-    CBSwipeType(List<I> data, CBAdapter<H, I> baseAdapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
+    CBSwipeType(List<I> data, CBAdapter<I> baseAdapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
         super(data, baseAdapter, listContainer, actionNotifier, context);
     }
 
     @Override
     public void cleanTouch() {
         Log.d("LIST API", "Item swipe rollback");
-        this.holder.getFrontItem().setBackgroundColor(Color.WHITE);
-        this.holder.getFrontItem().bringToFront();
-        doAnimation(-this.fromX, 0);
-        this.fromX = -1;
-        this.modeHelper.setSwipeActive(false);
-        this.actionNotifier.swipeAction();
+
+        if (this.modeHelper.isSwipeEnabled()) {
+            this.holder.getFrontItem().bringToFront();
+            doAnimation(-this.fromX, 0);
+            this.fromX = -1;
+            this.modeHelper.setSwipeActive(false);
+            this.actionNotifier.swipeAction();
+        }
     }
 
     private void doAnimation(final float startAt, final float endAt) {
@@ -55,16 +55,12 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
     public void onLongClick(MotionEvent e) {
         Log.d("LIST API", "Item long clicked");
 
-       if (!this.modeHelper.isSwipeActive()) {
-           int color = ((ColorDrawable)holder.getFrontItem().getBackground()).getColor();
-           if (color == Color.WHITE || color == this.modeHelper.getHightlightColor()) {
-               holder.getFrontItem().setBackgroundColor(this.modeHelper.getSelectColor());
-           } else {
-               holder.getFrontItem().setBackgroundColor(Color.WHITE);
-           }
-           //cleanTouch();
-           actionNotifier.longClickAction(pos);
-       }
+        if (!this.modeHelper.isSwipeActive() && this.modeHelper.isSelectEnabled()) {
+            //set active because the touch listener is on the listview, so the drawable of the listitem can react on it
+            this.holder.getFrontItem().setActivated(false);
+            this.adapter.toggleSelection(this.pos);
+            this.actionNotifier.longClickAction(pos);
+        }
     }
 
     @Override
@@ -77,8 +73,9 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
 
         if (!this.modeHelper.isSwipeActive() && this.pos != -1) {
             this.fromX = 0;
-            this.holder = (CBViewHolder) childView.getTag();
-            this.holder.getFrontItem().setBackgroundColor(this.modeHelper.getHightlightColor());
+            this.holder = (CBAdapterDelegate.CBViewHolder) childView.getTag();
+            //set active because the touch listener is on the listview, so the drawable of the listitem can react on it
+            this.holder.getFrontItem().setActivated(true);
             this.modeHelper.setCurrentPosition(this.pos);
         }
     }
@@ -90,7 +87,7 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
         if (isMotionOutside(start, end))
             return;
 
-        if (!this.modeHelper.isSwipeActive()) {
+        if (!this.modeHelper.isSwipeActive() && this.modeHelper.isSwipeEnabled()) {
             float offset = 0;
 
             Log.e("test", fromX  + ", " + -holder.getButtonContainer().getWidth() / 2);
@@ -118,26 +115,25 @@ public class CBSwipeType<H extends CBViewHolder<I>, I> extends CBTouchType<H, I>
 
     @Override
     public void onUp(MotionEvent event) {
-        if (isMotionOutside(event, null) && this.holder != null && !this.modeHelper.isSwipeActive())
+        //set active because the touch listener is on the listview, so the drawable of the listitem can react on it
+        if (this.holder != null)
+            this.holder.getFrontItem().setActivated(false);
+
+        if (this.holder != null &&
+                !this.modeHelper.isSwipeActive() &&
+                (!this.modeHelper.isButtonClicked() || isMotionOutside(event, null)))
             cleanTouch();
-
-        if (isMotionOutside(event, null))
-            return;
-
-        if (!this.modeHelper.isSwipeActive() && !this.modeHelper.isButtonClicked()) {
-            cleanTouch();
-        }
-       // view.setBackgroundColor(Color.parseColor("#f9f9f9"));
-
     }
 
     @Override
     public void onClick(MotionEvent e) {
         if (isMotionOutside(e, null))
-            return;;
+            return;
 
-        if (!this.modeHelper.isSwipeActive())
+        if (!this.modeHelper.isSwipeActive()) {
             this.actionNotifier.singleClickAction(this.pos);
+            return;
+        }
 
         if (this.modeHelper.isSwipeActive() && this.pos == this.modeHelper.getCurrentPosition())
             cleanTouch();

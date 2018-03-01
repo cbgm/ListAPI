@@ -12,5 +12,7 @@
     <color name="cb_edit_background_color">#aaaaaa</color>
     <color name="cb_delete_background_color">#cc0000</color>
 
-    <color name="yellow">#f04aff</color>
+    <color name="cb_item_selected">#f0f0f0</color>
+    <color name="cb_item_highlighted">#f9f9f9</color>
+    <color name="cb_item_base">#ffffff</color>
 </resources>

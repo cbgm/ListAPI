@@ -1,8 +1,12 @@
 package cbgm.de.listapi.basic;
 
 import android.content.Context;
+import android.graphics.PointF;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -21,19 +25,15 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  */
 
 @SuppressWarnings("unused")
-public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>> extends RecyclerView implements ICBActionNotifier<I> {
+public class CBListView<I> extends RecyclerView implements ICBActionNotifier<I> {
     /*Listener to forward list item click events*/
     protected ICBActionDelegate<I> deletegateListener;
-    /*The list adapter*/
-    protected A adapter;
     //touch handler for switching the possible touch types (swipe, sort, select)
-    protected CBTouchHandler<A, I, H> touchHandler;
-
+    protected CBTouchHandler<I> touchHandler;
+    //protected ArrayList<I> data = new ArrayList<>();
     protected CBModeHelper modeHelper = CBModeHelper.getInstance();
-    //array mirrors the positions of the selected items
-    protected ArrayList<Boolean> selectedItems;
     //tells if TouchHandler should be enabled for (swipe ,select, sort)
-    protected  boolean isTouchable = true;
+    protected boolean isTouchable = true;
 
     public CBListView(Context context) {
         super(context);
@@ -50,20 +50,10 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
     public boolean dispatchTouchEvent(final MotionEvent ev) {
         final int action = ev.getActionMasked() & MotionEvent.ACTION_MASK;
 
-        if (action == MotionEvent.ACTION_MOVE) {
+        if (action == MotionEvent.ACTION_MOVE && modeHelper.getListMode() == CBListMode.SWIPE) {
             return this.modeHelper.isSwipeActive() || super.dispatchTouchEvent(ev);
         }
         return super.dispatchTouchEvent(ev);
-    }
-
-    public void setAdapter(A adapter) {
-        this.adapter = adapter;
-        this.adapter.setActionListener(this);
-        super.setAdapter(this.adapter);
-    }
-
-    public CBAdapter<H, I> getAdapter() {
-        return this.adapter;
     }
 
     @Override
@@ -86,14 +76,6 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
         deletegateListener.delegateSortAction(list);
     }
 
-    public final void handleSelect(final int position) {
-        Log.d("LIST_API", "item selected");
-
-        if (position != -1)
-            this.selectedItems.set(position, !this.selectedItems.get(position));
-        deletegateListener.delegateSelectAction(position);
-    }
-
     @Override
     public void swipeAction() {
         deletegateListener.delegateSwipeAction();
@@ -101,86 +83,66 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
 
     @Override
     public void singleClickAction(final int position) {
+
         if (this.modeHelper.getListMode() == CBListMode.SELECT) {
-            Log.d("LIST API", "selecting");
-            handleSelect(position);
-            Log.d("LIST API", "value " + this.selectedItems.get(position));
-            Log.d("LIST API", "size " + getSelectedPositions().size());
-            boolean hasSelection = false;
-
-            for(Boolean value: this.selectedItems){
-                if(value){
-                    hasSelection = true;
-                    break;
-                }
-            }
-
-            if (!hasSelection) {
+            deletegateListener.delegateSelectAction(position);
+            if (this.getAdapter().getSelectedItemCount() == 0) {
                 this.modeHelper.setListMode(CBListMode.SWIPE);
-                this.modeHelper.setSelectedPosition(-1);
-                this.adapter.notifyDataSetChanged();
                 Log.d("LIST API", "off select");
             }
             return;
         }
         deletegateListener.delegateSingleClickAction(position);
+
     }
 
     @Override
     public void longClickAction(final int position) {
-        //check if not in selection mode
+
         if (this.modeHelper.getListMode() != CBListMode.SELECT) {
-            setSelectedItems();
             this.modeHelper.setListMode(CBListMode.SELECT);
-            this.adapter.notifyDataSetChanged();
-            handleSelect(position);
+            deletegateListener.delegateSelectAction(position);
         }
         deletegateListener.delegateLongClickAction(position);
     }
 
-    /**
-     * Method to initialize the selected items with a default value
-     */
-    protected void setSelectedItems(){
-        this.selectedItems = new ArrayList<>(getAdapter().getItemCount());
-
-        for(int i=0; i < getAdapter().getItemCount(); i++){
-            this.selectedItems.add(false);
-        }
+    @SuppressWarnings("unchecked")
+    @Override
+    public CBAdapter<I> getAdapter() {
+        return (CBAdapter<I>) super.getAdapter();
     }
 
-    /**
-     * Method to get the selected positions of the tetruns for further processing
-     * @return the positions
-     */
-    public List<Integer> getSelectedPositions(){
-        List<Integer> positions = new ArrayList<>();
-
-        for(int i=0; i < this.selectedItems.size(); i++){
-
-            if (this.selectedItems.get(i)){
-                positions.add(i);
-            }
-        }
-        return positions;
-    }
-
-    /**
-     * Method to initialize the list view
-     * @param data the list items
-     * @param adapter the adapter
-     */
-    public void init(final List<I> data, A adapter) {
-        this.adapter = adapter;
-
-        if (isTouchable) {
-            this.touchHandler = new CBTouchHandler<>(data, this.adapter, this, this, getContext());
+    public void setup(ArrayList<I> data, List<CBAdapterDelegate> delegates) {
+        setHasFixedSize(true);
+        setLayoutManager(new CBLayoutManager(getContext()));
+        setAdapter(new CBAdapter<>(getContext(), data, this));
+        if (this.isTouchable) {
+            this.touchHandler = new CBTouchHandler<>(data, getAdapter(), this, this, getContext());
             this.setOnTouchListener(touchHandler);
         } else {
             this.setOnTouchListener(null);
         }
-        this.adapter.init(data);
-        setAdapter(this.adapter);
+        for (CBAdapterDelegate delegate : delegates)
+            (getAdapter()).addAdapterDelegate(delegate);
+        this.modeHelper.setListMode(CBListMode.SWIPE);
+        getAdapter().notifyDataSetChanged();
+    }
+
+    public void setup(List<I> data, List<CBAdapterDelegate> delegates, ICBActionDelegate<I> delegateListener) {
+        this.deletegateListener = delegateListener;
+        setHasFixedSize(true);
+        setLayoutManager(new CBLayoutManager(getContext()));
+        setAdapter(new CBAdapter<>(getContext(), data, this));
+        if (this.isTouchable) {
+            this.touchHandler = new CBTouchHandler<>(data, getAdapter(), this, this, getContext());
+            this.setOnTouchListener(touchHandler);
+        } else {
+            this.setOnTouchListener(null);
+        }
+        for (CBAdapterDelegate delegate : delegates)
+            getAdapter().addAdapterDelegate(delegate);
+        this.modeHelper.setListMode(CBListMode.SWIPE);
+        getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -195,7 +157,7 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
      * Method to get the touch handler (can bes used to clean up touch events)
      * @return the CBTouchHandler
      */
-    public CBTouchHandler getTouchHandler() {
+    public CBTouchHandler<I> getTouchHandler() {
         return this.touchHandler;
     }
 
@@ -204,12 +166,62 @@ public class CBListView<H extends CBViewHolder<I>, I, A extends CBAdapter<H, I>>
         return super.performClick();
     }
 
-    public boolean isTouchable() {
-        return isTouchable;
+    /**
+     * Method to disable the touch abilities of the list.
+     * Should be called before the setup() method.
+     * @param isTouchable the isTouchable
+     */
+    public void setActiveModes(final boolean isTouchable) {
+        this.isTouchable = isTouchable;
     }
 
-    @SuppressWarnings("unused")
-    public void setTouchable(boolean touchable) {
-        isTouchable = touchable;
+    public class CBLayoutManager extends LinearLayoutManager {
+        private static final float MILLISECONDS_PER_INCH = 125f;
+        public CBLayoutManager(Context context) {
+            super(context);
+        }
+
+        public CBLayoutManager(Context context, int orientation, boolean reverseLayout) {
+            super(context, orientation, reverseLayout);
+        }
+
+        public CBLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+        }
+
+        @Override
+        public boolean canScrollVertically() {
+            return modeHelper.isScrollingAllowed() && super.canScrollVertically();
+        }
+
+        @Override
+        public void scrollToPosition(int position) {
+            this.smoothScrollToPosition(CBListView.this, null, position);
+        }
+
+        @Override
+        public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+
+            final LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(recyclerView.getContext()) {
+
+                @Override
+                public PointF computeScrollVectorForPosition(int targetPosition) {
+                    return CBLayoutManager.this.computeScrollVectorForPosition(targetPosition);
+                }
+
+                @Override
+                protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                    return MILLISECONDS_PER_INCH / displayMetrics.densityDpi;
+                }
+            };
+
+            linearSmoothScroller.setTargetPosition(position);
+            startSmoothScroll(linearSmoothScroller);
+        }
     }
+
+    public ICBActionNotifier<I> getActionNotifier() {
+        return this;
+    }
+
 }

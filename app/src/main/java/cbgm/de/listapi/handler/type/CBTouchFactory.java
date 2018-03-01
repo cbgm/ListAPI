@@ -1,12 +1,11 @@
 package cbgm.de.listapi.handler.type;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.basic.CBViewHolder;
+import cbgm.de.listapi.basic.CBListView;
 import cbgm.de.listapi.data.CBListMode;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.listener.ICBActionNotifier;
@@ -26,8 +25,11 @@ public class CBTouchFactory {
      * @param actionNotifier the listener to pass the touch events
      * @return the CBTouchType
      */
-    public static <H extends CBViewHolder<I>, I> CBTouchType getTouchType(final List<I> sequenceList, final CBAdapter<H, I> baseAdapter, final RecyclerView listContainer, final ICBActionNotifier<I> actionNotifier, Context context){
-        CBListMode mode = CBModeHelper.getInstance().getListMode();
+    public static <I> CBTouchType getTouchType(final List<I> sequenceList, final CBAdapter<I> baseAdapter, final CBListView listContainer, final ICBActionNotifier<I> actionNotifier, Context context){
+        CBModeHelper modeHelper = CBModeHelper.getInstance();
+        CBListMode mode = modeHelper.getListMode();
+        //if there was antoher instance of the list api before (fragments) it could be necessary to reset swipe
+        modeHelper.setSwipeActive(false);
 
         switch(mode) {
             case SWIPE:

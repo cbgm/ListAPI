@@ -1,6 +1,8 @@
 package cbgm.de.listapi.basic;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +10,8 @@ import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 
-import cbgm.de.listapi.R;
 import cbgm.de.listapi.data.CBLayoutID;
+import cbgm.de.listapi.data.CBModeHelper;
 
 
 /**
@@ -45,7 +47,17 @@ public class CBBaseView {
 
         GridLayout frontItem = new GridLayout(context);
         frontItem.setId(CBLayoutID.ITEM_FOREGROUND_ID);
-        frontItem.setBackgroundColor(ContextCompat.getColor(context, R.color.cb_item_foreground_color));
+        //add different color states to the list item (pressed, hold, base, selected)
+        StateListDrawable states = new StateListDrawable();
+        ColorDrawable dPressed, dBase, dSelected;
+        CBModeHelper modeHelper = CBModeHelper.getInstance();
+        dPressed = new ColorDrawable(ContextCompat.getColor(context, modeHelper.getHightlightColor()));
+        dBase = new ColorDrawable(ContextCompat.getColor(context, modeHelper.getBaseColor()));
+        dSelected = new ColorDrawable(ContextCompat.getColor(context, modeHelper.getSelectColor()));
+        states.addState (new int[]{ android.R.attr.state_activated}, dPressed);
+        states.addState (new int[]{ android.R.attr.state_selected}, dSelected);
+        states.addState (new int[]{ }, dBase);
+        frontItem.setBackground(states);
 
         mainContainer.addView(frontItem);
 

@@ -10,7 +10,6 @@ import android.view.View;
 import java.util.List;
 
 import cbgm.de.listapi.basic.CBAdapter;
-import cbgm.de.listapi.basic.CBViewHolder;
 import cbgm.de.listapi.data.CBModeHelper;
 import cbgm.de.listapi.listener.ICBActionNotifier;
 
@@ -20,11 +19,11 @@ import cbgm.de.listapi.listener.ICBActionNotifier;
  */
 
 @SuppressWarnings("unused")
-public abstract class CBTouchType<H extends CBViewHolder<I>, I> implements View.OnTouchListener {
+public abstract class CBTouchType<I> implements View.OnTouchListener {
     //the list item data
     protected List<I> data;
     //the recycler adapter
-    protected CBAdapter<H, I> adapter;
+    protected CBAdapter<I> adapter;
     //the recycler view
     protected RecyclerView listContainer;
     //the notifier when a list action is triggered
@@ -35,13 +34,16 @@ public abstract class CBTouchType<H extends CBViewHolder<I>, I> implements View.
     //detector for different gestures
     private GestureDetector gestureDetector;
 
-    public CBTouchType(final List<I> data, CBAdapter<H, I> baseAdapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
+    protected Context context;
+
+    public CBTouchType(final List<I> data, CBAdapter<I> baseAdapter, RecyclerView listContainer, ICBActionNotifier<I> actionNotifier, Context context) {
         this.data = data;
         this.adapter = baseAdapter;
         this.listContainer = listContainer;
         this.actionNotifier = actionNotifier;
         this.longPressHandler = new Handler();
         this.modeHelper = CBModeHelper.getInstance();
+        this.context = context;
         gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
@@ -70,10 +72,10 @@ public abstract class CBTouchType<H extends CBViewHolder<I>, I> implements View.
      */
     protected boolean isMotionOutside(MotionEvent start, MotionEvent end) {
 
-        View childViewStart = listContainer.findChildViewUnder((int) start.getX(), (int) start.getY());
+        View childViewStart = this.listContainer.findChildViewUnder((int) start.getX(), (int) start.getY());
 
         if (end != null) {
-            View childViewEnd = listContainer.findChildViewUnder((int) end.getX(), (int) end.getY());
+            View childViewEnd = this.listContainer.findChildViewUnder((int) end.getX(), (int) end.getY());
             return !(childViewStart != null && childViewEnd != null);
         }
         return childViewStart == null;
@@ -134,10 +136,10 @@ public abstract class CBTouchType<H extends CBViewHolder<I>, I> implements View.
                     if (Math.abs(diffY) > SWIPE_OFFSET) {
                         if (diffY > 0) {
                             onSwipeDown(e1, e2);
-                            super.onScroll(e1, e2, distanceX, distanceY);
+                            //super.onScroll(e1, e2, distanceX, distanceY);
                         } else {
                             onSwipeUp(e1, e2);
-                            super.onScroll(e1, e2, distanceX, distanceY);
+                            //super.onScroll(e1, e2, distanceX, distanceY);
                         }
                     }
                 }

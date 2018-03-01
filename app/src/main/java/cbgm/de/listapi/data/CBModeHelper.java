@@ -1,6 +1,6 @@
 package cbgm.de.listapi.data;
 
-import android.graphics.Color;
+import cbgm.de.listapi.R;
 
 /**
  * Singleton for vars that need global availability concerning the mode switching.
@@ -11,8 +11,6 @@ import android.graphics.Color;
 public class CBModeHelper {
     //tells if an item is in active swiping
     private boolean isSwipeActive = false;
-    //needed to tell the sort type which position should be highlighted
-    private int selectedPosition = - 1;
     //the list mode
     private CBListMode listMode = CBListMode.NULL;
     //tells if list mode was changed (for reload)
@@ -22,9 +20,17 @@ public class CBModeHelper {
     //tells if a button of the list item (delete, edit) was clicked
     private boolean buttonClicked = false;
     //the color for highlighting a touch
-    private int highlightColor = Color.WHITE;
+    private int hightlightColor = R.color.cb_item_highlighted;
     //the color for highlighting a selection
-    private int selectColor = Color.LTGRAY;
+    private int selectColor = R.color.cb_item_selected;
+    //the base color for each item
+    private int baseColor = R.color.cb_item_base;
+
+    private boolean isSelectEnabled = true;
+
+    private boolean isSwipeEnabled = true;
+
+    private boolean isScrollingAllowed = true;
 
     private static CBModeHelper modeHelper;
 
@@ -36,16 +42,32 @@ public class CBModeHelper {
         return modeHelper;
     }
 
+    public int getBaseColor() {
+        return baseColor;
+    }
+
+    public void setBaseColor(int baseColor) {
+        this.baseColor = baseColor;
+    }
+
+    public boolean isSwipeEnabled() {
+        return isSwipeEnabled;
+    }
+
+    public void setSwipeEnabled(boolean swipeEnabled) {
+        isSwipeEnabled = swipeEnabled;
+    }
+
+    public boolean isSelectEnabled() {
+        return isSelectEnabled;
+    }
+
+    public void setSelectEnabled(boolean selectEnabled) {
+        isSelectEnabled = selectEnabled;
+    }
+
     public void resetModeChanged() {
         this.modeChanged = false;
-    }
-
-    public int getSelectedPosition() {
-        return selectedPosition;
-    }
-
-    public void setSelectedPosition(int selectedPosition) {
-        this.selectedPosition = selectedPosition;
     }
 
     public boolean isSwipeActive() {
@@ -67,7 +89,6 @@ public class CBModeHelper {
 
     public void reset() {
         this.isSwipeActive = false;
-        this.selectedPosition = - 1;
         this.listMode = CBListMode.NULL;
         this.modeChanged = false;
         this.currentPosition = -1;
@@ -103,12 +124,12 @@ public class CBModeHelper {
         return modeHelper.isSwipeActive() && modeHelper.getCurrentPosition() == position;
     }
 
-    public int getHighlightColor() {
-        return highlightColor;
+    public int getHightlightColor() {
+        return hightlightColor;
     }
 
-    public void setHightightColor(int highlightColor) {
-        this.highlightColor = highlightColor;
+    public void setHightlightColor(int hightlightColor) {
+        this.hightlightColor = hightlightColor;
     }
 
     public int getSelectColor() {
@@ -118,4 +139,13 @@ public class CBModeHelper {
     public void setSelectColor(int selectColor) {
         this.selectColor = selectColor;
     }
+
+    public boolean isScrollingAllowed() {
+        return isScrollingAllowed;
+    }
+
+    public void setScrollingAllowed(boolean scrollingAllowed) {
+        isScrollingAllowed = scrollingAllowed;
+    }
+
 }

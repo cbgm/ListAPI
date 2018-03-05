@@ -94,6 +94,7 @@ public class CBSwipeType<I> extends CBTouchType<I> {
             if (fromX > holder.getButtonContainer().getWidth() / 2) {
                 doAnimation(-fromX, -holder.getButtonContainer().getWidth());
                 this.modeHelper.setSwipeActive(true);
+                this.actionNotifier.swipeAction();
             } else {
                 offset = start.getX() - end.getX();
                 doAnimation(-fromX, -offset);

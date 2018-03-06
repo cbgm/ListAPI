@@ -39,8 +39,9 @@ public class CBSwipeType<I> extends CBTouchType<I> {
             this.holder.getFrontItem().bringToFront();
             doAnimation(-this.fromX, 0);
             this.fromX = -1;
+            if (this.modeHelper.isSwipeActive())
+                this.actionNotifier.swipeAction();
             this.modeHelper.setSwipeActive(false);
-            this.actionNotifier.swipeAction();
         }
     }
 

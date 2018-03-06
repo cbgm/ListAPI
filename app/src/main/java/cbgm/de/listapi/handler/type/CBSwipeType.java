@@ -60,8 +60,10 @@ public class CBSwipeType<I> extends CBTouchType<I> {
             //set active because the touch listener is on the listview, so the drawable of the listitem can react on it
             this.holder.getFrontItem().setActivated(false);
             this.adapter.toggleSelection(this.pos);
-            this.actionNotifier.longClickAction(pos);
         }
+
+        if (!this.modeHelper.isSwipeActive())
+            this.actionNotifier.longClickAction(pos);
     }
 
     @Override

@@ -99,7 +99,7 @@ public class CBListView<I> extends RecyclerView implements ICBActionNotifier<I> 
     @Override
     public void longClickAction(final int position) {
 
-        if (this.modeHelper.getListMode() != CBListMode.SELECT) {
+        if (this.modeHelper.getListMode() != CBListMode.SELECT && this.modeHelper.isSelectEnabled()) {
             this.modeHelper.setListMode(CBListMode.SELECT);
             deletegateListener.delegateSelectAction(position);
         }

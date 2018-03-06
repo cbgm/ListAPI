@@ -21,62 +21,51 @@ It also supports multiple list items!
         ...
   -------------   
   
-##### When defining the holder (containing the neccessary elements) extend from CBViewHolder 
+##### When defining the a new list item extend from CBAdapterDelegate { 
 
-        public class MyHolder extends CBViewHolder<BaseItem> {
-                public TextView name;
+        public class AdapterDelegate1 extends CBAdapterDelegate<BaseItem> {
+              .....
 
-                public MyHolder(View itemView, Context context, ViewGroup parent, int itemRessource) {
-                        super(itemView, context, parent, itemRessource, true, true);
+##### Define the view by creating a view holder inside extended from CBAdapterDelegate.CBViewHolder
+                public class MyViewHolder extends CBAdapterDelegate.CBViewHolder {
+                        private TextView name;
+
+                        MyViewHolder(View itemView, ViewGroup parent, int itemRessource) {
+                            super(itemView, parent, itemRessource, true, true);
+                            this.addCustomButton(new MyButton(CustomLayoutID.CUSTOMBUTTON_ID, R.color.colorAccent, -1), parent.getContext());
+                            this.name = itemView.findViewById(R.id.txt_dynamic2);
+                        }
                 }
-
-##### Init the view elements
-                @Override
-                public void initPersonalView(View itemView, Context context) {
-                        this.name = (TextView) itemView.findViewById(R.id.txt_dynamic2);
-                }
-##### Init custom buttons
+##### Init the view by call in constructor
 
                 @Override
-                protected void initCustomButtons() {
-                        this.customButtons.add(new MyButton(CustomLayoutID.CUSTOMBUTTON_ID, R.color.yellow, -1));
+                protected MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                        return new MyViewHolder(CBBaseView.getView(parent.getContext()), parent, R.layout.backitem_standard);
                 }
 
 ##### Setup view funtionality
-                @Override
-                protected void setUpPersonalView(BaseItem listObject, final int position, ICBActionNotifier<BaseItem> actionNotifier, Context context) {
-                        final FirstItem temp = (FirstItem) listObject;
-                        this.name.setText(temp.getTest());
-                        this.name.setEnabled(true);
-                        this.name.setTextColor(Color.GREEN);
-
-                        this.buttonContainer.findViewById(CustomLayoutID.CUSTOMBUTTON_ID).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                        if (CBModeHelper.getInstance().isItemTouchCurrentItem(position))
-                                                myMenuListener.test(temp);
-                                }
+               @Override
+               protected void onBindDelegateViewHolder(final CBAdapterDelegate.CBViewHolder holder, final int position, final List<BaseItem> data) {
+                        final FirstItem item = (FirstItem) data.get(position);
+                        final MyViewHolder holderFinal = (MyViewHolder) holder;
+                        holderFinal.name.setText(item.getTest());
+                        holderFinal.name.setEnabled(true);
+                        holderFinal.name.setTextColor(Color.GREEN);
+                        holderFinal.getButtonContainer().findViewById(CustomLayoutID.CUSTOMBUTTON_ID).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (CBModeHelper.getInstance().isItemTouchCurrentItem(position))
+                                    myMenuListener.test(item);
+                            }
                         });
+                        holderFinal.itemView.setTag(holderFinal);
+                }
+
+                @Override
+                protected boolean isTypeOf(List<BaseItem> data, int position) {
+                        return data.get(position) instanceof FirstItem;
                 }
         
-2. Define the Adapter which connects the list and extend from CBAdapter
-        
-                public class MyAdapter extends CBAdapter<MyHolder, BaseItem> {
-
-                        private MyMenuListener myMenuListener;
-
-                        public MyAdapter(Context context) {
-                                super(context);
-                        }
-
-
-                        @Override
-                        public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                                return new MyViewHolder(CBBaseView.getView(context), context, parent, R.layout.backitem_standard);
-                        }
-
-              
-                }
 3. Define the Fragment which uses the list
 
                 public class MyFragment extends Fragment implements ICBActionDelegate<BaseItem> {
@@ -88,17 +77,13 @@ It also supports multiple list items!
                         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
                                 View rootView = inflater.inflate(R.layout.fragment, container, false);
-                                CBModeHelper.getInstance().setListMode(CBListMode.SWIPE);
                                 this.listContainer = find(rootView, R.id.list_container);
-                                this.listContainer.setHasFixedSize(true);
-                                LinearLayoutManager llm = new LinearLayoutManager(getContext());
-                                this.listContainer.setLayoutManager(llm);
-                                this.listContainer.setDelegateListener(this);
-                                this.adapter = new MyAdapter(getContext());
-                                this.adapter.setCustomMenuListener(this);
+                                List<CBAdapterDelegate> delegates = new ArrayList<>();
+                                delegates.add(new AdapterDelegate1(this));
+                                delegates.add(new AdapterDelegate2());
                                 loadData();
                                 setHasOptionsMenu(true);
-##### Add the listts data
+##### Call the list setup
                                 this.listContainer.init(this.viewItems, this.adapter);
                                 return rootView;
                         }
@@ -107,14 +92,21 @@ It also supports multiple list items!
 ###### When the foreground was clicked do at least something
 
             @Override
-            public void delegateSingleClick(int position) {
+            public void delegateSingleClickAction(int position) {
 
             }
 
 ###### Called when sorting is done
 
             @Override
-            public void delegateSort(List list) {
+            public void delegateSortAction(List list) {
+
+            }
+        }     
+###### Called when swipe is done
+
+            @Override
+            public void delegateSwipeAction() {
 
             }
         }     
@@ -122,8 +114,6 @@ It also supports multiple list items!
 
          CBModeHelper.getInstance().setListMode(CBListMode.SORT);
          loadData();
-         this.listContainer.init(this.viewItems, this.adapter);
-
         
 5. 
 
